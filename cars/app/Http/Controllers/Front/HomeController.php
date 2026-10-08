@@ -3,12 +3,9 @@
 namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Categorie;
 use App\Models\MarqueMachine;
 use App\Models\Gestion_machine;
 use App\Models\Banner;
-
-use App\Models\ModelVoiture;
 use App\Models\Model_machine;
 
 

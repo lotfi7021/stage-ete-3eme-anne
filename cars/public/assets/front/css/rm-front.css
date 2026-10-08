@@ -1,0 +1,231 @@
+/* ==========================================================================
+   SelectCars — Red Motorsport : thème FRONT OFFICE
+   Chargé APRES style.css, responsive.css et @stack('css') => autorité de cascade.
+   Ne renomme/supprime AUCUNE classe ou ID (contrat JS de script.js préservé).
+   Bootstrap 5 (front) uniquement.
+   ========================================================================== */
+
+/* ------------------------------------------------------------------ 0. Base */
+/* Le <body> porte theme-color-1 : on neutralise son override de --color-primary
+   pour que les tokens Red Motorsport gagnent. */
+body.theme-color-1 {
+  --color-primary: var(--rm-accent);
+  --color-primary-rgb: var(--rm-red-rgb);
+}
+
+body {
+  background-color: var(--rm-bg);
+  color: var(--rm-text);
+  font-family: var(--rm-font-body);
+}
+
+h1, h2, h3, h4, h5, h6,
+.section-title .title,
+.content-title,
+.page-title-area h2 {
+  font-family: var(--rm-font-heading);
+  letter-spacing: .3px;
+}
+
+::selection { background: rgba(var(--rm-red-rgb), .25); }
+
+/* --------------------------------------------------------------- 1. Boutons */
+.btn { border-radius: var(--rm-radius); }
+.btn-primary { box-shadow: 0 10px 24px rgba(var(--rm-red-rgb), .18); }
+.btn-primary:hover { box-shadow: none; }
+.btn-icon { border-radius: var(--rm-radius); }
+.btn-icon:hover { background-color: var(--rm-accent); color: var(--rm-white); }
+
+/* ------------------------------------------------------------ 2. Formulaires */
+.form-control { border-radius: var(--rm-radius); }
+.nice-select { border-radius: var(--rm-radius); }
+
+/* Le focus bleu (#86b7fe) de style.css est incompatible avec la DA : on force le rouge. */
+:is(input:not([type=radio], [type=checkbox]), textarea, select, .nice-select):is(:focus, :focus-within) {
+  border-color: var(--rm-accent) !important;
+  box-shadow: 0 0 0 .2rem rgba(var(--rm-red-rgb), .18);
+}
+
+/* --------------------------------------------------------------- 3. Header */
+/* Le header est en position absolue au-dessus d'une zone sombre (hero / page-title). */
+.header-area .nav-link { color: var(--rm-header-text); }
+.header-area .nav-link:hover,
+.header-area .nav-link.active,
+.header-area .nav-link:focus { color: var(--rm-accent) !important; }
+
+.header-area .main-navbar .navbar-brand img { border-radius: var(--rm-radius); }
+
+.header-area.is-sticky {
+  background: var(--rm-surface);
+  box-shadow: var(--rm-shadow-1);
+}
+.header-area.is-sticky .nav-link { color: var(--rm-text); }
+.header-area.is-sticky .nav-link:hover,
+.header-area.is-sticky .nav-link.active { color: var(--rm-accent) !important; }
+
+.header-area .main-navbar .menu-dropdown {
+  border-radius: var(--rm-radius);
+  background-color: var(--rm-surface);
+}
+.header-area .main-navbar .menu-dropdown .nav-link { color: var(--rm-text); }
+
+/* Bouton de bascule de thème */
+.rm-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  line-height: 1;
+}
+.header-area .more-option .rm-theme-toggle {
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  border-radius: 50%;
+  color: var(--rm-header-text);
+  transition: background .25s ease, color .25s ease;
+}
+.header-area .more-option .rm-theme-toggle:hover {
+  background: rgba(var(--rm-white-rgb), .14);
+  color: var(--rm-white);
+}
+.header-area.is-sticky .more-option .rm-theme-toggle { color: var(--rm-text); }
+.header-area.is-sticky .more-option .rm-theme-toggle:hover {
+  background: rgba(var(--rm-black-rgb), .08);
+  color: var(--rm-accent);
+}
+.mobile-menu-wrapper .rm-theme-toggle { color: var(--rm-text); }
+
+/* ------------------------------------------------------------ 4. Preloader */
+#preLoader { background-color: var(--rm-bg); }
+#preLoader .loader::before,
+#preLoader .loader::after { border-width: 2px; }
+
+/* --------------------------------------------------- 5. Footer & Go-top */
+.footer-area :is(h4) { font-family: var(--rm-font-heading); }
+.footer-area .footer-widget .footer-links li a:hover,
+.footer-area .footer-widget .info-list li a:hover { color: var(--rm-accent); }
+.newsletter-form .btn { background-color: var(--rm-accent); }
+
+.go-top { background: var(--rm-accent); }
+.go-top:hover { background: var(--rm-accent-hover); }
+
+/* ------------------------------------------------------------ 6. Accueil (hero) */
+.hero-banner.hero-banner-1 .banner-filter-form .form-wrapper { border-radius: var(--rm-radius-lg); }
+.hero-banner.hero-banner-1 .slider-navigation .slider-btn { border-radius: var(--rm-radius); }
+.hero-banner .banner-filter-form .btn { border-radius: var(--rm-radius); }
+.slider-btn { border-radius: var(--rm-radius); }
+
+/* ---------------------------------------------------- 7. Page titre & produits */
+.page-title-area::before { background: var(--rm-black); opacity: .55; }
+
+.product-default {
+  background: var(--rm-surface);
+  border: 1px solid var(--rm-border);
+  border-radius: var(--rm-radius-lg);
+  overflow: hidden;
+  transition: box-shadow .3s ease, transform .3s ease;
+}
+.product-default:hover { box-shadow: var(--rm-shadow-2); }
+.product-default .product-title a,
+.product-default .product-title { color: var(--rm-text); }
+.product-default .product-category { color: var(--rm-accent); }
+.product-default .new-price,
+.product-default .product-price .new-price { color: var(--rm-accent); font-family: var(--rm-font-heading); }
+.product-default .product-overlay { background-color: rgba(var(--rm-red-rgb), .32); }
+.product-default .hover-show { background-color: var(--rm-accent); }
+
+/* Pagination (custom .page-numbers + Bootstrap 5 .page-link) */
+.pagination .page-numbers { border-radius: var(--rm-radius); border-color: var(--rm-border); color: var(--rm-text); }
+.pagination .page-numbers.current,
+.pagination .page-numbers:hover { background: var(--rm-accent); color: var(--rm-white); }
+.pagination .page-link { color: var(--rm-text); border-color: var(--rm-border); }
+.pagination .page-item.active .page-link { background: var(--rm-accent); border-color: var(--rm-accent); color: var(--rm-white); }
+
+/* -------------------------------------------------------------- 8. Contact */
+.contact-area .card { border-radius: var(--rm-radius-lg); border-color: var(--rm-border); }
+.contact-area .card .icon { background: rgba(var(--rm-red-rgb), .12); color: var(--rm-accent); border-radius: var(--rm-radius); }
+
+/* ------------------------------------------------------------------ 9. FAQ */
+.faq-area .accordion-item { background-color: var(--rm-surface); border-radius: var(--rm-radius); }
+.faq-area .accordion-item .accordion-header .accordion-button { color: var(--rm-text); }
+.faq-area .accordion-item .accordion-header .accordion-button:not(.collapsed) { color: var(--rm-accent); }
+.faq-area .accordion-item .accordion-header .accordion-button:not(.collapsed)::after { color: var(--rm-accent); }
+.faq-area .accordion-item .accordion-body p { color: var(--rm-text-muted); }
+
+/* -------------------------------------------- 10. Composants migrés (@push css) */
+.cover-ribbon {
+  height: 115px;
+  width: 115px;
+  position: absolute;
+  right: -1px;
+  top: -8px;
+  z-index: 99;
+  overflow: hidden;
+}
+.cover-ribbon .cover-ribbon-inside {
+  background: var(--rm-accent);
+  color: var(--rm-white);
+  transform: rotate(45deg);
+  position: absolute;
+  right: -35px;
+  top: 15px;
+  padding: 10px;
+  min-width: 127px;
+  text-align: center;
+}
+.choose-area .image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--rm-radius-lg);
+}
+
+/* ============================================================ 11. THÈME SOMBRE */
+html[data-theme="dark"] {
+  background-color: var(--rm-bg);
+}
+html[data-theme="dark"] body {
+  background-color: var(--rm-bg);
+  color: var(--rm-text);
+}
+
+html[data-theme="dark"] #preLoader { background-color: #0D0C1B; }
+
+html[data-theme="dark"] .header-area.is-sticky {
+  background: var(--rm-surface);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .5);
+}
+html[data-theme="dark"] .header-area.is-sticky .nav-link { color: var(--rm-text); }
+html[data-theme="dark"] .header-area .main-navbar .menu-dropdown { background-color: var(--rm-surface); }
+
+html[data-theme="dark"] .product-default {
+  background: var(--rm-surface);
+  border-color: var(--rm-border);
+}
+html[data-theme="dark"] .product-default .product-title a,
+html[data-theme="dark"] .product-default .product-title { color: #F2F2F7; }
+
+html[data-theme="dark"] .faq-area .accordion-item { background-color: var(--rm-surface); }
+html[data-theme="dark"] .faq-area .accordion-item .accordion-header .accordion-button { color: var(--rm-text); }
+html[data-theme="dark"] .faq-area .accordion-item .accordion-body p { color: var(--rm-text-muted); }
+
+html[data-theme="dark"] .contact-area .card { background-color: var(--rm-surface); border-color: var(--rm-border); }
+
+html[data-theme="dark"] .form-control,
+html[data-theme="dark"] .nice-select,
+html[data-theme="dark"] textarea {
+  background-color: var(--rm-surface);
+  color: var(--rm-text);
+  border-color: var(--rm-border);
+}
+html[data-theme="dark"] .nice-select .list { background-color: var(--rm-surface); }
+html[data-theme="dark"] .nice-select .list .option { color: var(--rm-text); }
+html[data-theme="dark"] ::placeholder { color: var(--rm-text-muted) !important; }
+
+html[data-theme="dark"] .pagination .page-numbers { color: var(--rm-text); border-color: var(--rm-border); }
+html[data-theme="dark"] .pagination .page-link { background-color: var(--rm-surface); border-color: var(--rm-border); color: var(--rm-text); }
+html[data-theme="dark"] .pagination .page-item.active .page-link { background: var(--rm-accent); border-color: var(--rm-accent); }

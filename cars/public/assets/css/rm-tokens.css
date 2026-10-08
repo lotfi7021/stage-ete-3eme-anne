@@ -1,0 +1,89 @@
+/* ==========================================================================
+   SelectCars — Red Motorsport : Design Tokens
+   Source de vérité (front + back). Chargé APRES @stack('css').
+   Ce fichier ne contient QUE des variables (aucune règle composant).
+   ========================================================================== */
+
+/* --- 1. PRIMITIVES (invariantes) ---------------------------------------- */
+:root {
+  /* Marque */
+  --rm-red:        #E4002B;
+  --rm-red-600:    #C2001F;
+  --rm-red-rgb:    228, 0, 43;
+  --rm-black:      #0D0C1B;
+  --rm-black-rgb:  13, 12, 27;
+  --rm-white:      #FFFFFF;
+  --rm-white-rgb:  255, 255, 255;
+
+  /* Échelle de gris */
+  --rm-gray-050:   #F5F6F8;
+  --rm-gray-100:   #EDEEF2;
+  --rm-gray-200:   #E5E7EB;
+  --rm-gray-300:   #D1D5DB;
+  --rm-gray-400:   #9CA3AF;
+  --rm-gray-500:   #6B7280;
+  --rm-gray-700:   #374151;
+  --rm-gray-900:   #111827;
+
+  /* Typographie */
+  --rm-font-heading: "Oswald", "Poppins", sans-serif;
+  --rm-font-body:    "Poppins", sans-serif;
+
+  /* Rayons / ombres */
+  --rm-radius:     6px;
+  --rm-radius-lg:  10px;
+  --rm-shadow-1:   0 2px 8px rgba(13, 12, 27, .08);
+  --rm-shadow-2:   0 10px 30px -5px rgba(13, 12, 27, .18);
+}
+
+/* --- 2. SÉMANTIQUES — THÈME CLAIR (défaut) ------------------------------ */
+:root {
+  --rm-bg:           var(--rm-white);
+  --rm-bg-subtle:    var(--rm-gray-050);
+  --rm-surface:      var(--rm-white);
+  --rm-surface-2:    var(--rm-gray-050);
+  --rm-border:       var(--rm-gray-200);
+  --rm-text:         var(--rm-black);
+  --rm-text-muted:   var(--rm-gray-500);
+  --rm-text-inverse: var(--rm-white);
+  --rm-accent:       var(--rm-red);
+  --rm-accent-hover: var(--rm-red-600);
+  --rm-on-accent:    var(--rm-white);
+  --rm-header-bg:    var(--rm-black);
+  --rm-header-text:  var(--rm-white);
+  color-scheme: light;
+}
+
+/* --- 3. SÉMANTIQUES — THÈME SOMBRE -------------------------------------- */
+html[data-theme="dark"] {
+  --rm-bg:           #0D0C1B;
+  --rm-bg-subtle:    #08060F;
+  --rm-surface:      #15142A;
+  --rm-surface-2:    #1D1C33;
+  --rm-border:       #2A2942;
+  --rm-text:         #F2F2F7;
+  --rm-text-muted:   #A1A1B5;
+  --rm-on-accent:    var(--rm-white);
+  --rm-header-bg:    #08060F;
+  --rm-header-text:  #F2F2F7;
+  --rm-shadow-1:     0 2px 8px rgba(0, 0, 0, .5);
+  --rm-shadow-2:     0 10px 30px -5px rgba(0, 0, 0, .6);
+  color-scheme: dark;
+}
+
+/* --- 4. REMAP DES ALIAS LEGACY ----------------------------------------- */
+/* Corrige --color-secondary (référencée mais non définie) et aligne
+   --color-primary-rgb sur la couleur primaire réelle. Levier principal :
+   --color-primary est utilisé 130x dans style.css -> bascule globale. */
+:root {
+  --color-primary:     var(--rm-accent);
+  --color-primary-rgb: var(--rm-red-rgb);
+  --color-secondary:   var(--rm-black);
+  --color-dark:        var(--rm-black);
+  --color-black:       var(--rm-black);
+  --color-white:       var(--rm-white);
+  --font-heading:      var(--rm-font-heading);
+  --font-body:         var(--rm-font-body);
+  --radius-sm:         var(--rm-radius);
+  --radius-md:         var(--rm-radius-lg);
+}

@@ -3,16 +3,14 @@
 namespace App\Http\Controllers;
 use App\Models\Gestion_machine;
 use App\Models\MarqueMachine;
-use App\Models\Produit;
 use App\Models\stock_machine;
 use App\Models\Model_machine;
 use App\Models\Categorie;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
 use DataTables;
+use Illuminate\Support\Facades\DB;
+
 class GestionMachineController extends Controller
 
 {
@@ -37,7 +35,6 @@ class GestionMachineController extends Controller
 
 
     public function adminlist_machine(Request $request){
-        //dd($data);
         $titleSeo = 'Liste des pièces'; 
         if ($request->ajax()) {
             $data = Gestion_machine::select('*');
@@ -102,49 +99,40 @@ public function create()
 
 public function store(Request $request)
 {
-    // Valider les données de la requête
     $request->validate([
         'reference' => 'required|string|max:255',
         'titre' => 'required|string|max:255',
         'description' => 'required|string',
-        'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optionnel, mais doit être une image
-        'qte' => 'required|integer|min:1', // Quantité positive
+        'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'qte' => 'required|integer|min:1',
         'prix' => 'required|numeric|min:0',
-        'marque_id' => 'required|integer',
-        'model_id' => 'required|integer',
+        'marque_id' => 'required|integer|exists:marque_machines,id',
+        'model_id' => 'required|integer|exists:model_machines,id',
     ]);
 
-    // Créer une nouvelle instance de Gestion_machine
-    $gestion_machine = new Gestion_machine();
+    DB::transaction(function () use ($request) {
+        $gestion_machine = new Gestion_machine();
 
-    // Gérer le téléchargement de l'image
-    if ($request->file('image1')) {
-        $file = $request->file('image1');
-        $filename1 = time() . '_' . $file->getClientOriginalName();
-        $location = public_path('/images/produits');
-        $file->move($location, $filename1);
-        $gestion_machine->image1 = $filename1;
-    }
+        if ($request->file('image1')) {
+            $file = $request->file('image1');
+            $filename1 = time() . '_' . $file->getClientOriginalName();
+            $location = public_path('/images/produits');
+            $file->move($location, $filename1);
+            $gestion_machine->image1 = $filename1;
+        }
 
-    // Assigner les valeurs du formulaire
-    $gestion_machine->reference = $request->reference;
-    $gestion_machine->titre = $request->titre;
-    $gestion_machine->description = $request->description;
-    $gestion_machine->prix = $request->prix;
-    $gestion_machine->marque_id = $request->marque_id;
-    $gestion_machine->model_id = $request->model_id;
-    $gestion_machine->qte = $request->qte;
+        $gestion_machine->fill($request->only([
+            'reference', 'titre', 'description', 'prix', 'marque_id', 'model_id', 'qte'
+        ]));
+        $gestion_machine->save();
 
-    // Sauvegarder Gestion_machine
-    $gestion_machine->save();
-
-    // Gérer le stock
-    $stock = new stock_machine();
-    $stock->id_produit = $gestion_machine->id;
-    $stock->qte_initial = $request->qte;
-    $stock->mouvement = 0;
-    $stock->qte_final = $request->qte;
-    $stock->save();
+        stock_machine::create([
+            'id_produit' => $gestion_machine->id,
+            'qte_initial' => $request->qte,
+            'mouvement' => 0,
+            'qte_final' => $request->qte,
+        ]);
+    });
 
     return redirect()->route('admin.list_machine')->with('success', 'Machine ajoutée avec succès');
 }
@@ -180,54 +168,39 @@ public function store(Request $request)
 
     public function update(Request $request, $id)
     {
-        // Valider les données de la requête
         $request->validate([
             'reference' => 'required|string|max:255',
             'titre' => 'required|string|max:255',
             'description' => 'required|string',
-            'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optionnel, mais doit être une image
-            'qte' => 'required|integer|min:1', // Quantité positive
+            'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'qte' => 'required|integer|min:1',
             'prix' => 'required|numeric|min:0',
-            'marque_id' => 'required|integer',
-            'model_id' => 'required|integer',
+            'marque_id' => 'required|integer|exists:marque_machines,id',
+            'model_id' => 'required|integer|exists:model_machines,id',
         ]);
-    
-        $gestion_machine = Gestion_machine::find($id);
-    
-        // Gérer le téléchargement de l'image1
+
+        $gestion_machine = Gestion_machine::findOrFail($id);
+
         if ($request->file('image1')) {
             $file = $request->file('image1');
             $filename1 = time() . '_' . $file->getClientOriginalName();
             $location = public_path('/images/produits');
             $file->move($location, $filename1);
             $gestion_machine->image1 = $filename1;
-        } else {
-            $filename1 = $gestion_machine->image1;
         }
-    
-       
-        // Assigner les valeurs du formulaire
-        $gestion_machine->reference = $request->reference;
-        $gestion_machine->titre = $request->titre;
-        $gestion_machine->description = $request->description;
-        $gestion_machine->prix = $request->prix;
-        $gestion_machine->marque_id = $request->marque_id;
-        $gestion_machine->model_id = $request->model_id;
-        $gestion_machine->qte = $request->qte; 
-    
+
+        $gestion_machine->fill($request->only([
+            'reference', 'titre', 'description', 'prix', 'marque_id', 'model_id', 'qte'
+        ]));
         $gestion_machine->save();
-    
-        // Gérer le stock
-        $stock = stock_machine::where("id_produit", $gestion_machine->id)->first();
-        if (empty($stock->qte_initial)) {
-            $stock->qte_initial = $request->qte;
-            $stock->mouvement = 0;
-            $stock->qte_final = $request->qte;
-        } else {
+
+        $stock = stock_machine::where('id_produit', $gestion_machine->id)->first();
+        if ($stock) {
             $stock->qte_initial += $request->qte;
             $stock->qte_final += $request->qte;
+            $stock->save();
         }
-        $stock->save();
+
         return redirect()->route('admin.list_machine')->with('success', 'Machine mise à jour avec succès');
     }
 

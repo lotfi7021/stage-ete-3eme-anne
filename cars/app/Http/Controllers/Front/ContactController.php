@@ -5,12 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Contact;
-use App\Mail\ContactMail;
-
-use Illuminate\Http\RedirectResponse;
 use DataTables;
-
-use Mail;
 class ContactController extends Controller
 {
     public function index(){
@@ -42,40 +37,27 @@ class ContactController extends Controller
     return view('back.contact.list', compact('titleSeo'));
 }
 
-public function show($id){
-    $contact = Contact::where('id', $id)->first();
-    $titleSeo = 'detail support';
-
-    return view('back.contact.show',compact('contact','titleSeo')); 
+    public function show($id)
+    {
+        $contact = Contact::findOrFail($id);
+        $titleSeo = 'Détail contact';
+        return view('back.contact.show', compact('contact', 'titleSeo'));
     }
-
 
 
     public function store(Request $request)
     {
-       
-       $request->validate([
-            'nom' => 'required',
+        $request->validate([
+            'nom' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
             'telephone' => 'required|numeric',
-            'sujet' =>'required',
+            'sujet' => 'required|string|max:255',
+            'contenu' => 'nullable|string',
         ]);
 
-        $nom = $request->nom;
-        $email = $request->email;
+        Contact::create($request->only('nom', 'email', 'telephone', 'sujet', 'contenu'));
 
-        $telephone = $request->telephone;
-        $sujet = $request->sujet;
-        $contenu = $request->contenu;
-
-
-       
-
-            Contact::create($request->all());
-            
-            return redirect()->back()
-                             ->with(['success'=>'Merci de nous avoir contacté. nous vous répondrons sous peu']);
-        
-        
+        return redirect()->back()->with('success', 'Merci de nous avoir contacté. Nous vous répondrons sous peu.');
     }
   
     public function create()

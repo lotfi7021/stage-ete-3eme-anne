@@ -6,11 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Categorie;
 use App\Models\Gestion_pri;
-
-use App\Models\ModelVoiture;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Storage;
 use DataTables;
 
 class CategorieController extends Controller

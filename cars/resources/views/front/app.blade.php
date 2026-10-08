@@ -13,6 +13,8 @@
        <!-- Site Title -->
        <title>{{ $titleSeo }}</title>
        <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- Anti-FOUC : applique le thème (localStorage > OS) avant le premier paint --}}
+    <script>(function(){try{var s=localStorage.getItem('rm-theme');var d=s?s==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.setAttribute('data-theme',d?'dark':'light');}catch(e){}})();</script>
     <link rel="shortcut icon" href="{{ asset('assets/front/images/logo/fav.png') }}" type="image/x-icon">
 
     <!-- Bootstrap CSS -->
@@ -39,6 +41,9 @@
     <!-- Responsive CSS -->
     <link rel="stylesheet" href="{{ asset('assets/front/css/responsive.css') }}">
     @stack('css') 
+    <!-- Red Motorsport : tokens partagés puis thème front (chargés en dernier = autorité de cascade) -->
+    <link rel="stylesheet" href="{{ asset('assets/css/rm-tokens.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/front/css/rm-front.css') }}">
 </head>
   
 
@@ -84,6 +89,8 @@
     <!-- Main script JS -->
     <script src="{{asset('assets/front/js/script.js') }}"  type="text/javascript"></script>
     
+    <!-- Bascule de thème (clair / sombre) -->
+    <script src="{{ asset('assets/js/rm-theme.js') }}"></script>
     @stack('js')
   
 </body>

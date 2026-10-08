@@ -1,66 +1,164 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<p align="center"><h1 align="center">🚗 SelectCars - Vehicle Parts & Equipment Management Platform</h1></p>
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <strong>A full-stack web application for managing automotive parts, machines, and orders</strong>
 </p>
 
-## About Laravel
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#technologies">Technologies</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#database">Database</a>
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## About SelectCars
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**SelectCars** is a B2B/B2C e-commerce platform designed for an automotive parts and machinery company. Built as a **PFE (Projet de Fin d'Etudes)** project, it provides a complete solution for managing:
 
-## Learning Laravel
+- **Automotive parts** (pièces) organized by brand, model, and category
+- **Industrial machines and equipment**
+- **Order management** with delivery tracking
+- **Client management** with company details
+- **After-sales support** (SAV - Service Après-Vente)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Features
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Public-Facing (Front Office)
+- Homepage with animated banner slider and search form
+- Search by brand, model, and price range (with AJAX dynamic model loading)
+- Product/parts browsing and detail pages
+- Brand listing pages
+- Contact form with email notifications
+- FAQ page
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Admin Back Office
+- Dashboard with statistics
+- Full CRUD for products/pieces with image uploads
+- Brand (marque) and model management
+- Stock tracking with movement calculations
+- Order management with delivery assignment
+- Invoice/Invoice preview generation
+- Client management with company details
+- User account management (admin, client, livreur)
+- SAV (support) ticket system
+- Banner and FAQ content management
+- Calendar view for order scheduling
 
-## Laravel Sponsors
+### User Roles & Access Control
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+| Role | Access Level |
+|------|--------------|
+| **Admin** | Full access to everything |
+| **Client** | View catalog, own orders, create support tickets |
+| **Livreur** | View assigned orders, mark as delivered |
 
-### Premium Partners
+## Technologies
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+**Backend:**
+- PHP 8.1+
+- Laravel 10.x
+- MySQL database
+- Laravel Sanctum (API token authentication)
+- Yajra Laravel Datatables
 
-## Contributing
+**Frontend:**
+- Blade templating engine
+- Bootstrap 5 (AdminLTE theme)
+- Swiper Slider, AOS (Animate on Scroll)
+- NoUiSlider, Nice Select
+- Vite + Laravel Mix
+- SCSS/SASS
+- jQuery
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Installation
 
-## Code of Conduct
+### Prerequisites
+- PHP 8.1 or higher
+- Composer
+- Node.js & npm
+- MySQL
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Steps
 
-## Security Vulnerabilities
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd cars
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+2. Install PHP dependencies
+```bash
+composer install
+```
+
+3. Install JavaScript dependencies
+```bash
+npm install
+```
+
+4. Configure environment
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+5. Configure database in `.env` file
+
+6. Run migrations and seeders
+```bash
+php artisan migrate --seed
+```
+
+7. Build assets
+```bash
+npm run build
+```
+
+8. Start the development server
+```bash
+php artisan serve
+```
+
+## Usage
+
+### Default Login Credentials
+
+| Role | Email/Username | Password |
+|------|----------------|----------|
+| Admin | admin | password |
+| Client | user | password |
+| Livreur | livreur | password |
+
+### Routes
+
+- `/` - Homepage
+- `/login` - Admin login
+- `/admin/dashboard` - Admin dashboard
+- `/produits` - Product listing
+- `/contact` - Contact form
+- `/faq` - FAQ page
+
+## Database Structure
+
+| Table | Purpose |
+|-------|---------|
+| `admins` | User accounts (admin, client, livreur roles) |
+| `gestion_machines` | Product/parts catalog |
+| `marque_machines` | Machine/parts brands |
+| `model_machines` | Machine/parts models |
+| `stock_machines` | Stock tracking |
+| `commande__ms` | Orders |
+| `detail_commande_ms` | Order line items |
+| `clients` | Client companies |
+| `supports` | Support tickets (SAV) |
+| `contacts` | Contact form submissions |
+| `banners` | Homepage banners |
+| `faqs` | Frequently asked questions |
+| `settings` | Application settings |
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is a PFE (Projet de Fin d'Etudes) project.

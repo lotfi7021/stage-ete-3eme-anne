@@ -1,35 +1,6 @@
 
 @extends('front.app')
 
-@Push('css') 
-<style>
-.cover-ribbon {
-  height: 115px;
-  width: 115px;
-  position: absolute;
-  right: -1px;
-  top: -8px;
-  z-index: 99;
-  overflow: hidden;
-}
-.cover-ribbon .cover-ribbon-inside {
-  background: #ff002d;
-  color: #FFF;
-  transform: rotate(45deg);
-  position: absolute;
-  right: -35px;
-  top: 15px;
-  padding: 10px;
-  min-width: 127px;
-  text-align: center;
-}
-
-
-
-
-</style>
-@endpush
-
 @section('content') 
 
 

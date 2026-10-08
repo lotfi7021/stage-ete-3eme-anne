@@ -60,6 +60,12 @@
                                 <i class="far fa-user-circle"></i>
                             </a>
                         </div>-->
+
+                        <div class="item">
+                            <button type="button" class="btn-icon rm-theme-toggle" aria-label="Basculer le thème clair / sombre" title="Thème clair / sombre">
+                                <i class="fal fa-moon"></i>
+                            </button>
+                        </div>
                        
                         <div class="item">
                             <a href="{{route('login.form')}}" class="btn btn-md btn-primary" title="login" target="_self">login  </a>

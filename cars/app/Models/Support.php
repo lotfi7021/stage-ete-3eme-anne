@@ -8,12 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Support extends Model
 {
     use HasFactory;
+
     protected $primaryKey = 'id';
+
     protected $fillable = [
-       'id_client',
-       'sujet',
-       'support',
-       'message',
-       
+        'id_client',
+        'sujet',
+        'support',
+        'message',
     ];
+
+    public function client()
+    {
+        return $this->belongsTo(Admin::class, 'id_client');
+    }
 }

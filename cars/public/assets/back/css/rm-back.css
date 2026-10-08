@@ -1,0 +1,541 @@
+/* ==========================================================================
+   SelectCars — Red Motorsport : Thème Back-office
+   Coquille unique = AdminLTE 3.2 (Bootstrap 4.6). Chargé APRÈS @stack('css').
+   Direction : noir graphite #0D0C1B, rouge #E4002B, blanc, gris.
+   Titres = Oswald ; corps = Source Sans Pro (polices natives, aucun build).
+   Ne modifie AUCUNE vue : tout passe par la surcharge de classes AdminLTE/BS4.
+
+   Spécificité : chaque sélecteur de base est préfixé par ":root" (=> 1 classe
+   de plus). Raison : en thème sombre, le miroir body.dark-mode active les règles
+   natives d'AdminLTE (ex. body.dark-mode .btn-primary{background:#3f6791}) qui
+   écraseraient sinon nos valeurs. :root .btn-primary (0,2,0) = même poids que
+   body.dark-mode .btn-primary (0,2,0) mais chargé après -> gagne.
+   ========================================================================== */
+
+/* --------------------------------------------------------------- 1. Base */
+:root body {
+  font-family: "Source Sans Pro", "Poppins", sans-serif;
+  background-color: var(--rm-bg-subtle);
+  color: var(--rm-text);
+}
+
+/* Écran de chargement : fond graphite pour faire ressortir le logo blanc. */
+:root .preloader { background-color: var(--rm-black) !important; }
+
+:root h1, :root h2, :root h3, :root h4, :root h5, :root h6,
+:root .content-header h1,
+:root .card-title,
+:root .small-box .inner h3,
+:root .info-box-text {
+  font-family: "Oswald", "Poppins", sans-serif;
+  letter-spacing: .3px;
+}
+
+:root .content-header h1 { font-weight: 600; color: var(--rm-text); }
+
+:root a { color: var(--rm-accent); }
+:root a:hover, :root a:focus { color: var(--rm-accent-hover); }
+
+/* --------------------------------------------------------- 2. Topbar */
+:root .main-header.navbar {
+  background-color: var(--rm-header-bg);
+  border-bottom: 3px solid var(--rm-accent);
+}
+:root .main-header.navbar .nav-link,
+:root .main-header.navbar .navbar-nav > .nav-item > .nav-link {
+  color: rgba(255, 255, 255, .82);
+}
+:root .main-header.navbar .nav-link:hover,
+:root .main-header.navbar .nav-link:focus {
+  color: var(--rm-white);
+  background-color: rgba(255, 255, 255, .06);
+  border-radius: var(--rm-radius);
+}
+:root .main-header.navbar .navbar-badge { font-size: .6rem; font-weight: 700; }
+:root .main-header.navbar .dropdown-menu { border-top: 3px solid var(--rm-accent); }
+
+/* --------------------------------------------------------- 3. Sidebar */
+:root .main-sidebar,
+:root .main-sidebar.sidebar-dark-primary {
+  background-color: var(--rm-black);
+}
+/* Bandeau de marque : logo « SELECT CARS » centré (version blanche transparente). */
+:root .sidebar-dark-primary .brand-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 16px;
+  min-height: 74px;
+  border-bottom: 1px solid rgba(255, 255, 255, .10);
+}
+:root .brand-link .brand-image {
+  height: 46px;
+  width: auto;
+  max-height: 46px;
+  max-width: 100%;
+  border-radius: 0;
+  margin: 0;
+  float: none;
+  opacity: 1;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .55));
+}
+
+/* Panneau utilisateur */
+:root .sidebar-dark-primary .user-panel { border-bottom: 1px solid rgba(255, 255, 255, .08); }
+:root .sidebar-dark-primary .user-panel .image img {
+  width: 46px;
+  height: 46px;
+  object-fit: cover;
+  border: 2px solid rgba(var(--rm-red-rgb), .9);
+  box-shadow: 0 0 0 3px rgba(var(--rm-red-rgb), .16), 0 4px 12px rgba(0, 0, 0, .45);
+}
+:root .sidebar-dark-primary .user-panel .info { white-space: normal; }
+:root .sidebar-dark-primary .user-panel .info > span {
+  font-size: .95rem;
+  font-weight: 600;
+  letter-spacing: .2px;
+  line-height: 1.2;
+}
+:root .sidebar-dark-primary .user-panel .info small {
+  font-size: .68rem;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  opacity: .7;
+}
+
+/* Navigation : police, rythme et pastilles */
+:root .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link,
+:root .sidebar-dark-primary .nav-sidebar .nav-link {
+  color: rgba(255, 255, 255, .82);
+  font-size: .9rem;
+  font-weight: 500;
+  letter-spacing: .2px;
+  padding: .6rem .85rem;
+  margin: .1rem .5rem;
+  border-radius: var(--rm-radius);
+}
+:root .sidebar-dark-primary .nav-sidebar .nav-link > p { font-size: inherit; }
+:root .sidebar-dark-primary .nav-sidebar .nav-link > .nav-icon { font-size: .95rem; }
+:root .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link:hover,
+:root .sidebar-dark-primary .nav-sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, .07);
+  color: var(--rm-white);
+}
+:root .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active,
+:root .sidebar-dark-primary .nav-sidebar .nav-link.active {
+  background-color: var(--rm-accent);
+  color: var(--rm-white);
+  box-shadow: 0 2px 10px rgba(var(--rm-red-rgb), .40);
+}
+:root .sidebar-dark-primary .nav-sidebar .nav-treeview > .nav-item > .nav-link.active {
+  background-color: rgba(var(--rm-red-rgb), .14);
+  color: var(--rm-white);
+  box-shadow: none;
+}
+/* Puces des sous-menus : petit point rouge au lieu du gros cercle. */
+:root .sidebar-dark-primary .nav-treeview .nav-link > .nav-icon.fa-circle {
+  font-size: .38rem;
+  margin-top: -.15rem;
+  color: rgba(var(--rm-red-rgb), .85);
+}
+:root .nav-header {
+  color: rgba(255, 255, 255, .42);
+  font-family: "Oswald", sans-serif;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+:root .nav-sidebar .nav-link .badge { font-weight: 700; }
+
+/* --------------------------------------------------- 4. Contenu / header */
+:root .content-wrapper {
+  background-color: var(--rm-bg-subtle);
+  color: var(--rm-text);
+}
+:root .content-header { padding: 18px 0 6px; }
+:root .content-header h1 { font-size: 1.7rem; margin: 0; }
+:root .breadcrumb { background-color: transparent; padding: 0; margin-bottom: 0; }
+:root .breadcrumb-item + .breadcrumb-item::before { color: var(--rm-text-muted); }
+:root .breadcrumb-item a { color: var(--rm-accent); }
+:root .breadcrumb-item.active { color: var(--rm-text-muted); }
+
+/* ------------------------------------------------------------- 5. Cards */
+:root .card {
+  background-color: var(--rm-surface);
+  border: 1px solid var(--rm-border);
+  border-radius: var(--rm-radius-lg);
+  box-shadow: var(--rm-shadow-1);
+}
+:root .card-header {
+  background-color: var(--rm-surface);
+  border-bottom: 1px solid var(--rm-border);
+  border-radius: var(--rm-radius-lg) var(--rm-radius-lg) 0 0;
+}
+:root .card-title { font-size: 1.15rem; font-weight: 600; color: var(--rm-text); }
+:root .card-outline.card-primary,
+:root .card-primary.card-outline { border-top: 3px solid var(--rm-accent); }
+:root .card-tools .btn { border-radius: var(--rm-radius); }
+:root .card-footer { background-color: var(--rm-surface); border-top: 1px solid var(--rm-border); }
+
+/* ------------------------------------------------------------- 6. Tables */
+:root .table { color: var(--rm-text); border-color: var(--rm-border); }
+:root .table thead th {
+  font-family: "Oswald", sans-serif;
+  font-weight: 600;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  font-size: .78rem;
+  color: var(--rm-text-muted);
+  border-bottom: 2px solid var(--rm-accent);
+  background-color: var(--rm-surface);
+}
+:root .table td, :root .table th { border-color: var(--rm-border); vertical-align: middle; }
+:root .table-striped tbody tr:nth-of-type(odd) { background-color: var(--rm-surface-2); }
+:root .table-bordered { border-color: var(--rm-border); }
+:root .table-hover tbody tr:hover { background-color: rgba(var(--rm-red-rgb), .06); }
+
+/* DataTables */
+:root .dataTables_wrapper .dataTables_length,
+:root .dataTables_wrapper .dataTables_filter,
+:root .dataTables_wrapper .dataTables_info,
+:root .dataTables_wrapper .dataTables_processing,
+:root .dataTables_wrapper .dataTables_paginate { color: var(--rm-text-muted); }
+:root .dataTables_wrapper .dataTables_filter input,
+:root .dataTables_wrapper .dataTables_length select {
+  background-color: var(--rm-surface);
+  color: var(--rm-text);
+  border: 1px solid var(--rm-border);
+  border-radius: var(--rm-radius);
+  padding: 4px 8px;
+}
+:root .dataTables_wrapper .page-link {
+  color: var(--rm-text);
+  background-color: var(--rm-surface);
+  border-color: var(--rm-border);
+}
+:root .dataTables_wrapper .page-item.active .page-link {
+  background-color: var(--rm-accent);
+  border-color: var(--rm-accent);
+  color: var(--rm-white);
+}
+:root .dataTables_wrapper .page-link:hover { background-color: var(--rm-surface-2); }
+:root table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { background-color: var(--rm-accent); }
+
+/* ------------------------------------------------------------ 7. Badges */
+:root .badge { font-weight: 600; padding: .35em .6em; border-radius: var(--rm-radius); }
+:root .badge.bg-primary, :root .badge.badge-primary { background-color: var(--rm-accent); color: #fff; }
+:root .badge.bg-success, :root .badge.badge-success { background-color: #16A34A; color: #fff; }
+:root .badge.bg-danger,  :root .badge.badge-danger  { background-color: #DC2626; color: #fff; }
+:root .badge.bg-warning, :root .badge.badge-warning { background-color: #F59E0B; color: #1F2D3D; }
+:root .badge.bg-info,    :root .badge.badge-info    { background-color: #0EA5E9; color: #fff; }
+:root .badge.bg-secondary { background-color: var(--rm-gray-500); color: #fff; }
+
+/* ------------------------------------------------------------ 8. Boutons */
+:root .btn { border-radius: var(--rm-radius); font-weight: 600; }
+:root .btn-primary {
+  background-color: var(--rm-accent);
+  border-color: var(--rm-accent);
+  color: var(--rm-white);
+}
+:root .btn-primary:hover, :root .btn-primary:focus, :root .btn-primary:active,
+:root .btn-primary:not(:disabled):not(.disabled):active,
+:root .btn-primary:not(:disabled):not(.disabled).active,
+:root .show > .btn-primary.dropdown-toggle {
+  background-color: var(--rm-accent-hover);
+  border-color: var(--rm-accent-hover);
+  color: var(--rm-white);
+  box-shadow: 0 0 0 .2rem rgba(var(--rm-red-rgb), .25);
+}
+:root .btn-default {
+  background-color: var(--rm-surface);
+  border: 1px solid var(--rm-border);
+  color: var(--rm-text);
+}
+:root .btn-default:hover { background-color: var(--rm-surface-2); color: var(--rm-text); }
+:root .btn-danger  { background-color: #DC2626; border-color: #DC2626; color: #fff; }
+:root .btn-danger:hover, :root .btn-danger:focus { background-color: #B91C1C; border-color: #B91C1C; }
+:root .btn-warning { background-color: #F59E0B; border-color: #F59E0B; color: #1F2D3D; }
+:root .btn-warning:hover, :root .btn-warning:focus { background-color: #D97706; border-color: #D97706; color: #1F2D3D; }
+
+/* ------------------------------------------------------------ 9. Formulaires */
+:root .form-control, :root .custom-select {
+  background-color: var(--rm-surface);
+  color: var(--rm-text);
+  border: 1px solid var(--rm-border);
+  border-radius: var(--rm-radius);
+  height: auto;
+  min-height: 38px;
+}
+:root .form-control:focus, :root .custom-select:focus {
+  background-color: var(--rm-surface);
+  color: var(--rm-text);
+  border-color: var(--rm-accent);
+  box-shadow: 0 0 0 .2rem rgba(var(--rm-red-rgb), .20);
+}
+:root .form-control::placeholder { color: var(--rm-text-muted); opacity: 1; }
+:root .form-group label { font-weight: 600; color: var(--rm-text); }
+:root .input-group-text {
+  background-color: var(--rm-surface-2);
+  color: var(--rm-text-muted);
+  border: 1px solid var(--rm-border);
+}
+:root .invalid-feedback { color: #DC2626; }
+
+/* ------------------------------------------------------------- 10. Alertes */
+:root .alert { border: 1px solid transparent; border-radius: var(--rm-radius); }
+:root .alert-success { background-color: #E7F6EC; color: #14532D; border-color: #B7E4C7; }
+:root .alert-danger  { background-color: #FDE8E8; color: #7F1D1D; border-color: #F5C2C2; }
+:root .alert-info    { background-color: #E6F4FB; color: #0C4A6E; border-color: #BAE0F2; }
+:root .alert-warning { background-color: #FEF3C7; color: #78350F; border-color: #FDE68A; }
+
+/* ------------------------------------------------ 11. Info-box / small-box */
+:root .info-box {
+  background-color: var(--rm-surface);
+  border: 1px solid var(--rm-border);
+  border-radius: var(--rm-radius-lg);
+  box-shadow: var(--rm-shadow-1);
+}
+:root .info-box-icon { border-radius: var(--rm-radius-lg) 0 0 var(--rm-radius-lg); }
+:root .info-box-text { text-transform: uppercase; font-weight: 600; }
+:root .small-box { border-radius: var(--rm-radius-lg); box-shadow: var(--rm-shadow-2); overflow: hidden; }
+:root .small-box .icon { color: rgba(255, 255, 255, .25); }
+:root .small-box > .small-box-footer { background-color: rgba(0, 0, 0, .12); }
+:root .small-box.bg-primary { background-color: var(--rm-accent); }
+:root .small-box.bg-info    { background-color: #0EA5E9; }
+:root .small-box.bg-success { background-color: #16A34A; }
+:root .small-box.bg-warning { background-color: #F59E0B; color: #1F2D3D; }
+:root .small-box.bg-danger  { background-color: #DC2626; }
+
+/* --------------------------------------------------------- 12. Login page */
+/* Migré de back/admin_login.blade.php (ancien @push('css') inline).
+   La page de connexion est volontairement sombre dans les 2 thèmes :
+   on re-déclare les sémantiques pour que les composants AdminLTE hérités
+   (card-header, form-control, input-group-text…) restent lisibles. */
+:root body.login-page {
+  --rm-bg: #0D0C1B;
+  --rm-bg-subtle: #08060F;
+  --rm-surface: rgba(255, 255, 255, .06);
+  --rm-surface-2: rgba(255, 255, 255, .10);
+  --rm-border: rgba(255, 255, 255, .15);
+  --rm-text: #F2F2F7;
+  --rm-text-muted: #A1A1B5;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(var(--rm-red-rgb), .25), transparent 60%),
+    linear-gradient(160deg, #0D0C1B 0%, #1A1226 55%, #08060F 100%);
+  background-attachment: fixed;
+}
+:root body.login-page .background-image {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: -1;
+  object-fit: cover;
+  opacity: .38;
+}
+:root body.login-page .login-box {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+:root body.login-page .login-box .card {
+  width: 360px;
+  padding: 2rem;
+  background-color: rgba(21, 20, 42, .58);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-top: 4px solid var(--rm-accent);
+  border-radius: var(--rm-radius-lg);
+  box-shadow: var(--rm-shadow-2);
+}
+:root body.login-page .login-box .card-header {
+  margin-bottom: 20px;
+  font-family: "Oswald", sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--rm-white);
+  border-bottom: 0;
+}
+:root body.login-page .login-box .card-body { color: #F2F2F7; }
+:root body.login-page .login-box .input-group { margin-bottom: 15px; }
+:root body.login-page .login-box .input-group-text {
+  background-color: rgba(255, 255, 255, .08);
+  border: 1px solid rgba(255, 255, 255, .15);
+  color: #F2F2F7;
+}
+:root body.login-page .login-box .form-control {
+  border: 1px solid rgba(255, 255, 255, .15);
+  color: #F2F2F7;
+}
+:root body.login-page .login-box .btn-primary { width: 100%; padding: 10px 20px; font-size: 16px; }
+:root body.login-page .login-box-msg { text-align: center; margin-bottom: 20px; color: rgba(255, 255, 255, .8); }
+
+/* ------------------------------------------------------- 13. Footer */
+:root .main-footer {
+  background-color: var(--rm-surface);
+  border-top: 1px solid var(--rm-border);
+  color: var(--rm-text-muted);
+}
+
+/* --------------------------------------------- 14. Détail support / contact */
+/* Migré de back/support/show + back/contact/show (bloc .support-details jumeau) */
+:root .support-details {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+}
+:root .support-details .container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 80%;
+  max-width: 800px;
+}
+:root .support-details .card {
+  background-color: var(--rm-surface);
+  border: 1px solid var(--rm-border);
+  border-radius: var(--rm-radius-lg);
+  box-shadow: var(--rm-shadow-1);
+  padding: 20px;
+  transition: transform .3s, box-shadow .3s;
+}
+:root .support-details .card:hover { transform: translateY(-6px); box-shadow: var(--rm-shadow-2); }
+:root .support-details .card h3 { margin-top: 0; font-size: 1.4rem; font-family: "Oswald", sans-serif; }
+:root .support-details .card p { margin: 10px 0; font-size: 1.05rem; color: var(--rm-text); }
+
+/* ------------------------------------------ 15. Confirmation de commande */
+/* Migré de back/commandeM/edit.blade.php (@push('styles') orphelin -> rm-back.css) */
+:root .confirm-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+  padding: 20px;
+}
+:root .confirm-card {
+  background: var(--rm-surface);
+  padding: 50px 40px;
+  border-radius: var(--rm-radius-lg);
+  border: 1px solid var(--rm-border);
+  border-top: 4px solid var(--rm-accent);
+  box-shadow: var(--rm-shadow-2);
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+  animation: rmFadeInScale .6s ease-out;
+  position: relative;
+}
+:root .confirm-icon {
+  font-size: 5rem;
+  margin-bottom: 20px;
+  animation: rmBounce 2s infinite;
+  color: var(--rm-accent);
+}
+:root .confirm-title {
+  font-family: "Oswald", sans-serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--rm-text);
+  margin-bottom: 15px;
+}
+:root .confirm-subtitle {
+  font-size: 1.1rem;
+  color: var(--rm-text-muted);
+  margin-bottom: 35px;
+  line-height: 1.6;
+}
+:root .confirm-btn {
+  background: linear-gradient(135deg, var(--rm-red) 0%, var(--rm-red-600) 100%);
+  color: var(--rm-white);
+  border: none;
+  padding: 18px 55px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all .3s ease;
+  box-shadow: 0 10px 30px rgba(var(--rm-red-rgb), .40);
+  position: relative;
+  overflow: hidden;
+  transform: translateY(0);
+}
+:root .confirm-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .4), transparent);
+  transition: left .6s ease;
+}
+:root .confirm-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(var(--rm-red-rgb), .55);
+}
+:root .confirm-btn:hover::before { left: 100%; }
+:root .confirm-btn:active { transform: translateY(-1px); }
+
+:root .loading { pointer-events: none; opacity: .8; }
+:root .loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border: 3px solid transparent;
+  border-top: 3px solid #fff;
+  border-radius: 50%;
+  animation: rmSpin 1s linear infinite;
+}
+
+@keyframes rmFadeInScale {
+  from { opacity: 0; transform: scale(.9) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes rmBounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-12px); }
+  60% { transform: translateY(-6px); }
+}
+@keyframes rmSpin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@media (max-width: 768px) {
+  :root .confirm-card { margin: 15px; padding: 35px 25px; }
+  :root .confirm-title { font-size: 1.9rem; }
+  :root .confirm-btn { width: 100%; padding: 15px; font-size: 1.1rem; }
+  :root .confirm-icon { font-size: 4rem; }
+}
+
+/* ==========================================================================
+   16. AJUSTEMENTS THÈME SOMBRE
+   Les couleurs ci-dessus utilisent les tokens (déjà thémés). Il ne reste ici
+   que les valeurs non-variable (alertes, flèche .custom-select) + garde-fou.
+   ========================================================================== */
+html[data-theme="dark"] .custom-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23A1A1B5' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e");
+}
+html[data-theme="dark"] .alert-success { background-color: #0F2A1B; color: #86EFAC; border-color: #14532D; }
+html[data-theme="dark"] .alert-danger  { background-color: #2A0F14; color: #FCA5A5; border-color: #7F1D1D; }
+html[data-theme="dark"] .alert-info    { background-color: #0B2233; color: #7DD3FC; border-color: #0C4A6E; }
+html[data-theme="dark"] .alert-warning { background-color: #2A2010; color: #FCD34D; border-color: #78350F; }
+html[data-theme="dark"] .close { color: var(--rm-text); text-shadow: none; }
+html[data-theme="dark"] .table thead th { background-color: var(--rm-surface); color: var(--rm-text-muted); }
+html[data-theme="dark"] .table-hover tbody tr:hover { background-color: rgba(var(--rm-red-rgb), .10); }
+html[data-theme="dark"] img.img-rounded,
+html[data-theme="dark"] .table .img-rounded { border-radius: var(--rm-radius); }
+
+/* Le contenu de la facture reste lisible à l'impression, même en thème sombre */
+@media print {
+  html[data-theme="dark"] body,
+  html[data-theme="dark"] .content-wrapper,
+  html[data-theme="dark"] #print { background: #fff !important; color: #000 !important; }
+}

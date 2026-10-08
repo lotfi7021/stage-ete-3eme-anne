@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Admin extends Authenticatable
 {
     use HasFactory;
+
     protected $primaryKey = 'id';
+
     protected $fillable = [
         'nom',
         'prenom',
@@ -23,12 +24,25 @@ class Admin extends Authenticatable
         'telephone',
         'Email',
         'region',
-        'status'
-
-
+        'status',
     ];
 
     protected $hidden = [
-        'password'
+        'password',
     ];
+
+    public function commandes()
+    {
+        return $this->hasMany(Commande_M::class, 'id_client');
+    }
+
+    public function livraisons()
+    {
+        return $this->hasMany(Commande_M::class, 'id_livreur');
+    }
+
+    public function supports()
+    {
+        return $this->hasMany(Support::class, 'id_client');
+    }
 }

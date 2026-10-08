@@ -5,13 +5,12 @@ use App\Models\Commande_M;
 use App\Models\Gestion_machine;
 use App\Models\Detail_commandeM;
 use App\Models\stock_machine;
-use Auth;
-
 use App\Models\Admin;
-use App\Models\Livreur;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use DataTables;
-Use Carbon\Carbon;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 class CommandeMachineController extends Controller
 {
 
@@ -106,38 +105,46 @@ public function create_commande()
 public function store(Request $request)
 {
     $request->validate([
-        'ref_commande'=>'required',
-         'date_livraison'=>'required',
+        'ref_commande' => 'required|string',
+        'date_livraison' => 'required|date',
+        'id_client' => 'required|integer|exists:admins,id',
+        'paiement' => 'required|string',
+        'id' => 'required|array',
+        'qte' => 'required|array',
+        'prix' => 'required|array',
     ]);
-    $commande = new Commande_M();
-    $total_prix=0;
 
-    foreach($request->qte as $key=>$value)
-    {    
-        $detail_commande = new Detail_commandeM();
-        $detail_commande->ref_commande = $request->ref_commande;
-        $detail_commande->id_produit = $request->id[$key];
-        $detail_commande->prix = $request->prix[$key];
-        $detail_commande->qte = $request->qte[$key];
-        $total_prix +=$request->prix[$key]*$request->qte[$key];
-        if($request->qte[$key]!=0){
-        $detail_commande->save();
-} 
-    }
-    $commande->ref_commande = $request->ref_commande;
-    $commande->id_client = $request->id_client;
-    $commande->prix = $total_prix;
-    $commande->tva = $total_prix*1.19;
-    $commande->date_livraison = $request->date_livraison;
-    $commande->title = $request->ref_commande;
-    $commande->start = Carbon::now();
-    $commande->end = Carbon::now()->addHour();
-    $commande->id_livreur = 0;
-    $commande->etat = 'en attente';
-    $commande->paiement = $request->paiement;
-   $commande->save();
-      return redirect()->route('admin.list_commandeM')->with('success', 'Commande ajouter avec succèes');
+    DB::transaction(function () use ($request) {
+        $total_prix = 0;
 
+        foreach ($request->qte as $key => $value) {
+            if ($request->qte[$key] != 0) {
+                Detail_commandeM::create([
+                    'ref_commande' => $request->ref_commande,
+                    'id_produit' => $request->id[$key],
+                    'prix' => $request->prix[$key],
+                    'qte' => $request->qte[$key],
+                ]);
+                $total_prix += $request->prix[$key] * $request->qte[$key];
+            }
+        }
+
+        Commande_M::create([
+            'ref_commande' => $request->ref_commande,
+            'id_client' => $request->id_client,
+            'prix' => $total_prix,
+            'tva' => $total_prix * 1.19,
+            'date_livraison' => $request->date_livraison,
+            'title' => $request->ref_commande,
+            'start' => Carbon::now(),
+            'end' => Carbon::now()->addHour(),
+            'id_livreur' => 0,
+            'etat' => 'en attente',
+            'paiement' => $request->paiement,
+        ]);
+    });
+
+    return redirect()->route('admin.list_commandeM')->with('success', 'Commande ajoutée avec succès.');
 }
 
 
@@ -158,19 +165,22 @@ public function updateLivreur(Request $request, $id)
     if (!$commande) {
         return back()->with('error', 'Commande non trouvée.');
     }
-    $commande->etat = 'confirmée'; 
-    $commande->save();
-    $detail_commande = Detail_commandeM::where('ref_commande',$commande->ref_commande)->get();
-    foreach($detail_commande as $list_detail){
 
-    $stock = stock_machine::where('id_produit', $list_detail->id_produit)->first();
-    $mouvement_ancien = $stock->mouvement;
-    $qte_initial = $stock->qte_initial;
-    $ajouter_stock = $list_detail->qte+ $mouvement_ancien;
-    $stock->mouvement = $ajouter_stock;
-    $stock->qte_final = ($qte_initial-$stock->mouvement);
-    $stock->save();
-}
+    DB::transaction(function () use ($commande) {
+        $commande->etat = 'confirmée';
+        $commande->save();
+
+        $details = Detail_commandeM::where('ref_commande', $commande->ref_commande)->get();
+        foreach ($details as $detail) {
+            $stock = stock_machine::where('id_produit', $detail->id_produit)->first();
+            if ($stock) {
+                $stock->mouvement += $detail->qte;
+                $stock->qte_final = $stock->qte_initial - $stock->mouvement;
+                $stock->save();
+            }
+        }
+    });
+
     return redirect()->route('admin.list_commandeM')->with('success', 'Livreur assigné et commande confirmée avec succès.');
 }
    
@@ -208,9 +218,11 @@ public function apercufacture_machine($ref_commande)
 
 public function destroy($id)
 {
-    $commande = Commande_M::where('id', $id)->firstOrFail();
-    Detail_commandeM::where('ref_commande', $commande->ref_commande)->delete();
-    $commande->delete();
+    DB::transaction(function () use ($id) {
+        $commande = Commande_M::where('id', $id)->firstOrFail();
+        Detail_commandeM::where('ref_commande', $commande->ref_commande)->delete();
+        $commande->delete();
+    });
     return redirect()->route('admin.list_commandeM')->with('success', 'Commande supprimée');
 }
 }

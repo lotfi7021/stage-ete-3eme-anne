@@ -8,50 +8,7 @@
 
 @section('content')
 <!-- Content Wrapper. Contains page content -->
-<style>
-        .support-details {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        .support-details .container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 80%;
-            max-width: 800px;
-        }
-
-        .support-details .card {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .support-details .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        .support-details .card h3 {
-            margin-top: 0;
-            font-size: 24px;
-        }
-
-        .support-details .card p {
-            margin: 10px 0;
-            font-size: 18px;
-        }
-    </style>
-    <div class="content-wrapper">
+<div class="content-wrapper">
 
  <div class="support-details">
         <div class="container">

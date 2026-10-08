@@ -281,8 +281,6 @@ $(document).on('input','#reference',function(e){
                     $('select[name="model"]').empty();
                     
                     $.each(data, function(key,value){
-                        console.log(value);
-
                         $('select[name="model"]').append('<option value="'+value+'">'+value+'</option>');
                     });
                    
