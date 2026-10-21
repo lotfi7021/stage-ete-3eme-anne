@@ -25,9 +25,9 @@ class ContactController extends Controller
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
 
-                        $btn = '<a href="contact-US/'.$row->id.'/detail" class="badge  bg-primary" style="padding:5px;margin-right:2px;"><i class="fa fa-eye"></i></a>';
+                        $btn = '<a href="'.route('contactjj.us.show', $row->id).'" class="badge  bg-primary" style="padding:5px;margin-right:2px;"><i class="fa fa-eye"></i></a>';
 
-                        $btn .= '<a onclick="return confirm(\'Vous êtes sûr de supprimer contact?\')" href="contact-US/'.$row->id.'/delete" class="badge  bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
+                        $btn .= '<a onclick="return confirm(\'Vous êtes sûr de supprimer contact?\')" href="'.route('contact.us.destroy', $row->id).'" class="badge  bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
                   
                         return $btn;
                 })
@@ -60,15 +60,6 @@ class ContactController extends Controller
         return redirect()->back()->with('success', 'Merci de nous avoir contacté. Nous vous répondrons sous peu.');
     }
   
-    public function create()
-    {
-        $titleSeo = 'Contact-US';
-        return view('front.contact',compact('titleSeo'));
-    }
-   
-
-
-
     public function destroy($id)
     {
         $contact = Contact::where('id',$id)->firstOrFail()->delete();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use DataTables;
 
 class BannerController extends Controller
@@ -26,8 +27,8 @@ class BannerController extends Controller
                    
                     ->addColumn('action', function($row){
                             
-                            $btn = '<a href="list_banners/'.$row->id.'/edit" class="badge  bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
-                            $btn .= '<a onclick="return confirm(\'Vous êtes sûr de supprimer le bannière?\')" href="list_banners/'.$row->id.'/delete" class="badge  bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
+                            $btn = '<a href="'.route('admin.list_banners.edit', $row->id).'" class="badge  bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
+                            $btn .= '<a onclick="return confirm(\'Vous êtes sûr de supprimer le bannière?\')" href="'.route('admin.banners.delete', $row->id).'" class="badge  bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
                             return $btn;
                     })
                     ->rawColumns(['action'])
@@ -61,6 +62,7 @@ class BannerController extends Controller
           $banner->titre = $request->titre;
           $banner->image = $filename1;
           $banner->save();
+          Cache::forget('front.banners');
           return redirect()->route('admin.list_banners')->with('success', 'Bannière ajouter avec succèes');
         
     }
@@ -96,6 +98,7 @@ class BannerController extends Controller
           $banner->titre = $request->titre;
           $banner->image = $filename1;
           $banner->save();
+          Cache::forget('front.banners');
           return redirect()->route('admin.list_banners')->with('success','Merci!');
         
     }
@@ -104,6 +107,7 @@ class BannerController extends Controller
     public function destroy($id)
     {
         $banner = Banner::where('id',$id)->firstOrFail()->delete();
+        Cache::forget('front.banners');
         return redirect()->route('admin.list_banners')->with('success','Banner Supprimer');
 
     }

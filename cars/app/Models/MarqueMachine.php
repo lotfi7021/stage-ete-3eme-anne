@@ -10,4 +10,9 @@ class MarqueMachine extends Model
     use HasFactory;
     protected $primaryKey = 'id';
     protected $fillable = ['titre'];
+
+    public function gestionMachines()
+    {
+        return $this->hasMany(GestionMachine::class, 'marque_id');
+    }
 }

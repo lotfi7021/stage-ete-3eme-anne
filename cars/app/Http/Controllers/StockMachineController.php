@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Gestion_machine;
-use App\Models\stock_machine;
+use AppModelsGestionMachine;
+use App\Models\StockMachine;
 use Illuminate\Http\Request;
 use DataTables;
 
@@ -13,14 +13,14 @@ class StockMachineController extends Controller
     {
         $titleSeo = 'Liste de stocks';
         if ($request->ajax()) {
-            $data = stock_machine::with('produit')->orderBy('id', 'desc');
+            $data = StockMachine::with('produit')->orderBy('id', 'desc');
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('id_produit', function ($item) {
                     return $item->produit ? $item->produit->titre : '';
                 })
                 ->addColumn('action', function ($row) {
-                    return '<a href="' . $row->id . '/edit_machine" class="badge bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
+                    return '<a href="' . route('admin.list_stock.machine.edit', $row->id) . '" class="badge bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -30,7 +30,7 @@ class StockMachineController extends Controller
 
     public function edit($id)
     {
-        $stock = stock_machine::findOrFail($id);
+        $stock = StockMachine::findOrFail($id);
         $titleSeo = 'Modifier stock';
         return view('back.gestion_machine.Stock.edit', compact('titleSeo', 'stock'));
     }
@@ -43,7 +43,7 @@ class StockMachineController extends Controller
             'qte_final' => 'required|integer|min:0|max:99999999',
         ]);
 
-        $stock = stock_machine::findOrFail($id);
+        $stock = StockMachine::findOrFail($id);
         $stock->update($request->only('qte_initial', 'mouvement', 'qte_final'));
 
         return redirect()->route('admin.list_stock.machine')->with('success', 'Stock mis à jour');

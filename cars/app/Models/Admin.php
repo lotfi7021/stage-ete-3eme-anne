@@ -33,12 +33,12 @@ class Admin extends Authenticatable
 
     public function commandes()
     {
-        return $this->hasMany(Commande_M::class, 'id_client');
+        return $this->hasMany(CommandeM::class, 'id_client');
     }
 
     public function livraisons()
     {
-        return $this->hasMany(Commande_M::class, 'id_livreur');
+        return $this->hasMany(CommandeM::class, 'id_livreur');
     }
 
     public function supports()

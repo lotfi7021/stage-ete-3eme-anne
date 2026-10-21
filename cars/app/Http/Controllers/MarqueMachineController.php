@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MarqueMachine;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use DataTables;
 class MarqueMachineController extends Controller
 {
@@ -23,8 +24,8 @@ class MarqueMachineController extends Controller
                     ->addColumn('action', function($row){
        
                          
-                            $btn = '<a href="list_marque/'.$row->id.'/editmachine" class="badge  bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
-                            $btn .= '<a onclick="return confirm(\'Vous êtes sûr de supprimer la marque?\')" href="list_marque/'.$row->id.'/delete" class="badge  bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
+                            $btn = '<a href="'.route('list_marque.machine.edit', $row->id).'" class="badge  bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
+                            $btn .= '<a onclick="return confirm(\'Vous êtes sûr de supprimer la marque?\')" href="'.route('list_marque.machine.delete', $row->id).'" class="badge  bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
                             return $btn;
                     })
                     ->rawColumns(['action'])
@@ -55,6 +56,7 @@ public function store(Request $request)
 
       $marque->save();
     
+      Cache::forget('front.marques');
       return redirect()->route('list_marque.machine')->with('success', 'Marque ajouter avec succèe');
 }
 
@@ -66,6 +68,7 @@ public function store(Request $request)
 public function destroy($id)
 {
     $marque = MarqueMachine::where('id',$id)->firstOrFail()->delete();
+    Cache::forget('front.marques');
     return redirect()->route('list_marque.machine')->with('success','machine  Supprimer');
 }
 
@@ -93,6 +96,7 @@ public function update(Request $request, $id)
         $marque->titre = $request->titre;
                
     $marque->save();
+    Cache::forget('front.marques');
     return redirect()->route('list_marque.machine')->with('success','Merci!');
     
 }

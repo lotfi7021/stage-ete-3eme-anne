@@ -1,14 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Gestion_machine;
+use App\Models\GestionMachine;
 use App\Models\MarqueMachine;
-use App\Models\stock_machine;
-use App\Models\Model_machine;
+use App\Models\StockMachine;
+use App\Models\ModelMachine;
 use App\Models\Categorie;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use DataTables;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class GestionMachineController extends Controller
@@ -19,12 +20,12 @@ class GestionMachineController extends Controller
   public function index()
   {
       $titleBreadcrumbs = 'machines';
-      $titleSeo = 'SD-AUTO';
+      $titleSeo = 'Machines - SelectCars';
       $descriptionSeo ='machines';
-      $count_machine = Gestion_machine::count();    
-      $machine = Gestion_machine::orderBy('created_at','desc')->paginate(6);
-      $marquefetch = MarqueMachine::get();
-      $modelfetch = Model_machine::get();
+      $count_machine = GestionMachine::count();    
+      $machine = GestionMachine::with('marque')->orderBy('created_at','desc')->paginate(6);
+      $marquefetch = Cache::remember('front.marques', 600, fn () => MarqueMachine::get());
+      $modelfetch = Cache::remember('front.models', 600, fn () => ModelMachine::get());
 
       $categorieslist = Categorie::get();
       return view('front.recherche.chercherm',compact('titleBreadcrumbs','titleSeo','descriptionSeo','machine','count_machine','marquefetch','modelfetch','categorieslist'));
@@ -37,23 +38,17 @@ class GestionMachineController extends Controller
     public function adminlist_machine(Request $request){
         $titleSeo = 'Liste des pièces'; 
         if ($request->ajax()) {
-            $data = Gestion_machine::select('*');
+            $data = GestionMachine::with(['marque', 'model', 'stock'])->select('*');
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('marque_id', function($data){   
-                      $marque_machine = MarqueMachine::where('id',$data->marque_id)->first()->titre;
-                      $titlemarque = $marque_machine;
-                      return $titlemarque;
+                      return $data->marque?->titre ?? '—';
                 })
                 ->addColumn('model_id', function($data){
-                  $model_machine = Model_Machine::where('id',$data->model_id)->first()->titre;
-                  $titleModel = $model_machine;
-                  return $titleModel;
+                  return $data->model?->titre ?? '—';
             })
             ->addColumn('stock', function($data) {
-              $stockItem = stock_Machine::where('id_produit', $data->id)->first();
-              // Return qte_final directly for processing in the DataTables render function
-              return $stockItem->qte_final; // Return '0' if nothing found
+              return $data->stock ? $data->stock->qte_final : 0;
           })
           
                     ->addColumn('image', function ($image) {
@@ -71,9 +66,9 @@ class GestionMachineController extends Controller
                 
                     ->addColumn('action', function($row){
        
-                            $btn = '<a href="list_machine/'.$row->id.'/detail" class="badge  bg-primary" style="padding:5px;margin-right:2px;"><i class="fa fa-eye"></i></a>';
-                            $btn .= '<a href="list_machine/'.$row->id.'/edit" class="badge  bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
-                            $btn .= '<a onclick="return confirm(\'Vous êtes sûr de supprimer la machine?\')" href="list_machine/'.$row->id.'/delete" class="badge  bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
+                            $btn = '<a href="'.route('admin.list_machine.detail', $row->id).'" class="badge  bg-primary" style="padding:5px;margin-right:2px;"><i class="fa fa-eye"></i></a>';
+                            $btn .= '<a href="'.route('admin.list_machine.edit', $row->id).'" class="badge  bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
+                            $btn .= '<a onclick="return confirm(\'Vous êtes sûr de supprimer la machine?\')" href="'.route('admin.list_machine.delete', $row->id).'" class="badge  bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
       
                             return $btn;
                     })
@@ -89,11 +84,10 @@ public function create()
 {
     $titleSeo = 'Ajouter une machine';
     $marque_machine = MarqueMachine::get();
-    $stock = stock_Machine::get();
-    $model_machine = Model_Machine::get();
+    $model_machine = ModelMachine::get();
     $ref = 'C-'.Str::random(5);
 
-    return view('back.gestion_machine.add',compact('titleSeo','marque_machine','ref','model_machine','stock'));
+    return view('back.gestion_machine.add',compact('titleSeo','marque_machine','ref','model_machine'));
 }
 
 
@@ -111,7 +105,7 @@ public function store(Request $request)
     ]);
 
     DB::transaction(function () use ($request) {
-        $gestion_machine = new Gestion_machine();
+        $gestion_machine = new GestionMachine();
 
         if ($request->file('image1')) {
             $file = $request->file('image1');
@@ -126,7 +120,7 @@ public function store(Request $request)
         ]));
         $gestion_machine->save();
 
-        stock_machine::create([
+        StockMachine::create([
             'id_produit' => $gestion_machine->id,
             'qte_initial' => $request->qte,
             'mouvement' => 0,
@@ -143,25 +137,27 @@ public function store(Request $request)
 
     public function destroy($id)
     {
-        $gestion_machine = Gestion_machine::where('id',$id)->first();
-        $gestion_machine->status=0;
-        $gestion_machine->save();
-        //$gestion_pri= Gestion_pri::where('produit_id',$id)->delete();
-        //$stock= Stock::where('id_produit',$id)->delete();
-        return redirect()->route('admin.list_machine')->with('success','machine Supprimer');
+        $gestion_machine = GestionMachine::where('id', $id)->firstOrFail();
+
+        DB::transaction(function () use ($gestion_machine) {
+            StockMachine::where('id_produit', $gestion_machine->id)->delete();
+            $gestion_machine->delete();
+        });
+
+        return redirect()->route('admin.list_machine')->with('success', 'Machine supprimée');
     }
 
 
 
     public function edit($id)
     {
-        $gestion_machine = Gestion_machine::where('id',$id)->first();
+        $gestion_machine = GestionMachine::where('id',$id)->first();
         if(is_null($gestion_machine)){
            return abort(404);  }
         $titleSeo=$gestion_machine->titre;
         $marque_machine = MarqueMachine::get();
-        $model_machine = Model_Machine::get();
-        $stock = stock_machine::where("id_produit",$gestion_machine->id)->first();
+        $model_machine = ModelMachine::get();
+        $stock = StockMachine::where("id_produit",$gestion_machine->id)->first();
         return view('back.gestion_machine.edit',compact('titleSeo','gestion_machine', 'marque_machine','model_machine','stock'));
     }
 
@@ -179,7 +175,7 @@ public function store(Request $request)
             'model_id' => 'required|integer|exists:model_machines,id',
         ]);
 
-        $gestion_machine = Gestion_machine::findOrFail($id);
+        $gestion_machine = GestionMachine::findOrFail($id);
 
         if ($request->file('image1')) {
             $file = $request->file('image1');
@@ -194,7 +190,7 @@ public function store(Request $request)
         ]));
         $gestion_machine->save();
 
-        $stock = stock_machine::where('id_produit', $gestion_machine->id)->first();
+        $stock = StockMachine::where('id_produit', $gestion_machine->id)->first();
         if ($stock) {
             $stock->qte_initial += $request->qte;
             $stock->qte_final += $request->qte;
@@ -207,22 +203,21 @@ public function store(Request $request)
     
     public function show($id)
     {
-        $gestion_machine = Gestion_machine::where('id',$id)->first();
-        $stock = stock_machine::where("id_produit", $gestion_machine->id)->first();
+        $gestion_machine = GestionMachine::with('marque')->where('id',$id)->first();
 
         if(is_null($gestion_machine)){
             return abort(404);
          }
           $titleSeo=$gestion_machine->titre;
 
-        return view('back.gestion_machine.show',compact('titleSeo','gestion_machine','stock'));
+        return view('back.gestion_machine.show',compact('titleSeo','gestion_machine'));
     }
 
 
 
     public function checkReference(Request $request){
         $reference = $request->input('reference');
-        $isExists = Gestion_machine::where('reference','LIKE',"%{$reference}%")->first();
+        $isExists = GestionMachine::where('reference','LIKE',"%{$reference}%")->first();
         if($isExists){
             return 'Référence existe déjà';
         }else{
@@ -237,16 +232,14 @@ public function clientlist_machine(Request $request){
         
   $titleSeo = 'Liste des machines'; 
   if ($request->ajax()) {
-      $data = Gestion_machine::select('*');
+      $data = GestionMachine::with(['marque', 'model', 'stock'])->select('*');
       return Datatables::of($data)
               ->addIndexColumn()
-              ->addColumn('marque_id', function($marque_id){
-                $marque_machine = MarqueMachine::where('id',$marque_id->marque_id)->first();
-                return $marque_machine->titre;
+              ->addColumn('marque_id', function($data){
+                return $data->marque?->titre ?? '—';
           })
-          ->addColumn('model_id', function($model_id){
-            $model_machine = Model_Machine::where('id',$model_id->model_id)->first();
-            return $model_machine->titre;
+          ->addColumn('model_id', function($data){
+            return $data->model?->titre ?? '—';
       })
 
       
@@ -261,14 +254,14 @@ public function clientlist_machine(Request $request){
                   return $prix;
               })  
               ->addColumn('stock', function($data) {
-                $stockItem = stock_Machine::where('id_produit', $data->id)->first();
-                // Return qte_final directly for processing in the DataTables render function
-                return $stockItem->qte_final; // Return '0' if nothing found
+                return $data->stock ? $data->stock->qte_final : 0;
             })
           
               ->addColumn('action', function($row){
  
-                      $btn = '<a href="list_machine/'.$row->id.'/detail" class="badge  bg-primary" style="padding:5px;margin-right:2px;"><i class="fa fa-eye"></i></a>';
+                      $btn = '<a href="'.route('client.show.machine', $row->id).'" class="badge  bg-primary" style="padding:5px;margin-right:2px;"><i class="fa fa-eye"></i></a>';
+
+                      $btn .= '<a href="'.route('admin.list_commandeM.add').'" class="badge  bg-success" style="padding:5px;margin-right:2px;" title="Lancer une commande"><i class="fa fa-shopping-cart"></i></a>';
 
                       return $btn;
               })
@@ -281,7 +274,7 @@ return view('back.gestion_machine.clientlist', compact('titleSeo'));
 
 public function clientshow_machine($id)
 {
-    $gestion_machine = Gestion_machine::where('id',$id)->first();
+    $gestion_machine = GestionMachine::with('marque')->where('id',$id)->first();
 
     if(is_null($gestion_machine)){
         return abort(404);

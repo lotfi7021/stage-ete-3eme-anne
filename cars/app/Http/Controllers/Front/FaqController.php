@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Models\Faq;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use DataTables;
 
 class FaqController extends Controller
@@ -15,10 +16,10 @@ class FaqController extends Controller
     public function index()
     {
             $titleBreadcrumbs = 'FAQ';
-            $titleSeo = 'FAQ - coffe-shop';
+            $titleSeo = 'FAQ - SelectCars';
             $descriptionSeo ='faq';
 
-            $faq = Faq::orderByDesc('created_at')->get();
+            $faq = Cache::remember('front.faq.list', 600, fn () => Faq::orderByDesc('created_at')->get());
         
         return view('front.faq',compact('titleBreadcrumbs','titleSeo','descriptionSeo','faq')); 
         
@@ -32,8 +33,8 @@ class FaqController extends Controller
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
-                            $btn = '<a href="list_faq/'.$row->id.'/edit" class="badge  bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
-                            $btn .= '<a onclick="return confirm(\'Vous êtes sûr de supprimer le Faq?\')" href="list_faq/'.$row->id.'/delete" class="badge  bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
+                            $btn = '<a href="'.route('admin.list_faq.edit', $row->id).'" class="badge  bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
+                            $btn .= '<a onclick="return confirm(\'Vous êtes sûr de supprimer le Faq?\')" href="'.route('admin.list_faq.delete', $row->id).'" class="badge  bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
 
                             return $btn;
                     })
@@ -61,6 +62,7 @@ class FaqController extends Controller
         $faq->question = $request->question;
         $faq->reponse = $request->reponse;
         $faq->save();
+        Cache::forget('front.faq.list');
         return redirect()->route('admin.list_faq')->with('success', 'Faq ajouter avec succèes');
 
     }
@@ -85,6 +87,7 @@ class FaqController extends Controller
           $faq->question = $request->question;
           $faq->reponse = $request->reponse;
           $faq->save();
+          Cache::forget('front.faq.list');
           return redirect()->route('admin.list_faq')->with('success','Merci!');
     }
 
@@ -92,6 +95,7 @@ class FaqController extends Controller
     public function destroy($id)
     {
         $faq = Faq::where('id',$id)->firstOrFail()->delete();
+        Cache::forget('front.faq.list');
         return redirect()->route('admin.list_faq')->with('success','Faq Supprimer');
     }
 }

@@ -3,27 +3,23 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Front\DashController;
+use App\Http\Requests\StoreAdminRequest;
+use App\Http\Requests\StoreClientRequest;
+use App\Http\Requests\StoreLivreurRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use App\Models\Admin;
-use App\Models\Commande_M;
+use Illuminate\Support\Facades\Log;
 use DataTables;
 
 class AdminController extends Controller
 {
-    public function __construct()
-    {
-        if (!Auth::guard('admin')->check()) {
-            return redirect()->route('login.form');
-        }
-    }
-
     public function login_form()
     {
-        $titleSeo = 'Admin Login Form';
+        $titleSeo = 'Connexion - SelectCars';
 
         if (!Auth::guard('admin')->check()) {
             return view('back.admin_login', compact('titleSeo'));
@@ -35,8 +31,8 @@ class AdminController extends Controller
     public function login_functionality(Request $request)
     {
         $request->validate([
-            'login' => 'required|string',
-            'password' => 'required|string',
+            'login' => 'required|string|max:255',
+            'password' => 'required|string|max:255',
         ]);
 
         if (Auth::guard('admin')->attempt(['login' => $request->login, 'password' => $request->password, 'status' => 1])) {
@@ -54,6 +50,11 @@ class AdminController extends Controller
                     return redirect()->route('login.form');
             }
         } else {
+            Log::warning('Échec de connexion', [
+                'login' => $request->input('login'),
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
             Session::flash('error-message', 'Login ou mot de passe incorrect.');
             return back();
         }
@@ -61,21 +62,7 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        $titleSeo = 'Tableau de bord';
-        return view('back.Dashboard.support', compact('titleSeo'));
-    }
-
-    public function calendar(Request $request)
-    {
-        if (!Auth::guard('admin')->check()) {
-            return redirect()->route('login.form');
-        }
-
-        $data = Commande_M::whereDate('start', '>=', $request->start)
-            ->whereDate('end', '<=', $request->end)
-            ->get(['id', 'title', 'start', 'end']);
-
-        return response()->json($data);
+        return app(DashController::class)->support();
     }
 
     public function settings(Request $request)
@@ -102,11 +89,9 @@ class AdminController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href="' . $row->id . '/edit" class="badge bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
-                    if ($row->role != 'admin') {
-                        $btn .= '<a onclick="return confirm(\'Vous êtes sûr de désactiver le compte?\')" href="' . $row->id . '/delete" class="badge bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
-                    }
-                    return $btn;
+                    return $row->role != 'admin'
+                        ? $this->actionBadges(route('admin.settings', $row->id), route('admin.list_compte.delete', $row->id), 'Vous êtes sûr de désactiver le compte?')
+                        : $this->actionBadges(route('admin.settings', $row->id));
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -124,9 +109,7 @@ class AdminController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href="list_compte/' . $row->id . '/edit_client" class="badge bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
-                    $btn .= '<a onclick="return confirm(\'Vous êtes sûr de supprimer le compte?\')" href="list_compte/' . $row->id . '/delete" class="badge bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
-                    return $btn;
+                    return $this->actionBadges(route('admin.list_client.edit', $row->id), route('admin.list_compte.delete_client', $row->id), 'Vous êtes sûr de supprimer le compte?');
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -136,27 +119,8 @@ class AdminController extends Controller
 
     // ── Gestion des comptes client ──
 
-    public function create_client()
+    public function store_client(StoreClientRequest $request)
     {
-        $titleSeo = 'Ajouter un compte';
-        return view('back.compte.add_client', compact('titleSeo'));
-    }
-
-    public function store_client(Request $request)
-    {
-        $request->validate([
-            'nom' => 'required|string|max:255',
-            'prenom' => 'required|string|max:255',
-            'nom_de_la_societe' => 'required|string|max:255',
-            'code_TVA' => 'required|string|max:255',
-            'adresse' => 'required|string|max:255',
-            'telephone' => ['required', 'regex:/^\d{8}$/'],
-            'Email' => 'required|email|max:255',
-            'login' => 'required|unique:admins,login',
-            'groupe' => 'required|string|max:255',
-            'password' => ['required', Password::min(8)->letters()->mixedCase()->numbers()->symbols()->uncompromised()],
-        ]);
-
         Admin::create([
             'nom' => $request->nom,
             'prenom' => $request->prenom,
@@ -206,15 +170,8 @@ class AdminController extends Controller
         return view('back.compte.add', compact('titleSeo'));
     }
 
-    public function store(Request $request)
+    public function store(StoreAdminRequest $request)
     {
-        $request->validate([
-            'nom' => 'required|string|max:255',
-            'login' => 'required|unique:admins,login',
-            'role' => 'required|in:admin,client,livreur',
-            'password' => ['required', Password::min(8)->letters()->mixedCase()->numbers()->symbols()->uncompromised()],
-        ]);
-
         Admin::create([
             'nom' => $request->nom,
             'prenom' => '',
@@ -243,10 +200,17 @@ class AdminController extends Controller
 
         $admin = Admin::findOrFail($id);
         $admin->nom = $request->nom;
-        $admin->prenom = $request->prenom;
-        $admin->telephone = $request->telephone;
         $admin->login = $request->login;
-        $admin->role = $request->role;
+
+        if ($request->filled('prenom')) {
+            $admin->prenom = $request->prenom;
+        }
+        if ($request->filled('telephone')) {
+            $admin->telephone = $request->telephone;
+        }
+        if ($request->filled('role')) {
+            $admin->role = $request->role;
+        }
 
         if ($request->filled('password')) {
             $admin->password = Hash::make($request->password);
@@ -276,9 +240,7 @@ class AdminController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href="list_livreurs/' . $row->id . '/edit" class="badge bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
-                    $btn .= '<a onclick="return confirm(\'Vous êtes sûr de supprimer le livreur?\')" href="list_compte/' . $row->id . '/delete_livreur" class="badge bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
-                    return $btn;
+                    return $this->actionBadges(route('admin.list_livreur.edit', $row->id), route('admin.list_compte.delete_livreur', $row->id), 'Vous êtes sûr de supprimer le livreur?');
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -292,17 +254,8 @@ class AdminController extends Controller
         return view('back.compte.add', compact('titleSeo'));
     }
 
-    public function store_livreur(Request $request)
+    public function store_livreur(StoreLivreurRequest $request)
     {
-        $request->validate([
-            'nom' => 'required|string|max:255',
-            'prenom' => 'required|string|max:255',
-            'telephone' => ['required', 'regex:/^\d{8}$/'],
-            'region' => 'required|string|max:255',
-            'login' => 'required|unique:admins,login',
-            'password' => ['required', Password::min(8)->letters()->mixedCase()->numbers()->symbols()->uncompromised()],
-        ]);
-
         Admin::create([
             'nom' => $request->nom,
             'prenom' => $request->prenom,
@@ -355,5 +308,14 @@ class AdminController extends Controller
     {
         Admin::where('id', $id)->firstOrFail()->delete();
         return redirect()->back()->with('success', 'Compte supprimé');
+    }
+
+    private function actionBadges(string $editRoute, ?string $deleteRoute = null, ?string $confirmMessage = null): string
+    {
+        $btn = '<a href="' . $editRoute . '" class="badge bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
+        if ($deleteRoute !== null) {
+            $btn .= '<a onclick="return confirm(\'' . $confirmMessage . '\')" href="' . $deleteRoute . '" class="badge bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
+        }
+        return $btn;
     }
 }

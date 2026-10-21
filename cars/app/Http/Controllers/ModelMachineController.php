@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Model_machine;
+use App\Models\ModelMachine;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use DataTables;
 
 class ModelMachineController extends Controller
@@ -17,12 +18,12 @@ class ModelMachineController extends Controller
             
             $titleSeo = 'Liste des model'; 
             if ($request->ajax()) {
-                $data = Model_machine::select('*')->orderBy('id','desc');
+                $data = ModelMachine::select('*')->orderBy('id','desc');
                 return Datatables::of($data)
                         ->addIndexColumn()
                         ->addColumn('action', function($row){
-                                $btn = '<a href="list_model/'.$row->id.'/edit" class="badge  bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
-                                $btn .= '<a onclick="return confirm(\'Vous êtes sûr de supprimer le Model?\')" href="list_model/'.$row->id.'/delete" class="badge  bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
+                                $btn = '<a href="'.route('list_model.machine.edit', $row->id).'" class="badge  bg-success" style="padding:5px;margin-right:2px;"><i class="fa fa-pencil-alt"></i></a>';
+                                $btn .= '<a onclick="return confirm(\'Vous êtes sûr de supprimer le Model?\')" href="'.route('list_model.machine.delete', $row->id).'" class="badge  bg-danger" style="padding:5px;margin-right:2px;"><i class="fa fa-trash"></i></a>';
                                 return $btn;
                         })
                         ->rawColumns(['action'])
@@ -44,23 +45,25 @@ class ModelMachineController extends Controller
         $request->validate([
             'titre' => 'required',
         ]);
-        $model = new Model_machine();
+        $model = new ModelMachine();
           $model->titre = $request->titre;
           $model->save();
+          Cache::forget('front.models');
           return redirect()->route('list_model.machine')->with('success', 'Model ajouter avec succèe');
     }
 
     
     public function destroy($id)
     {
-        $model = Model_machine::where('id',$id)->firstOrFail()->delete();
+        $model = ModelMachine::where('id',$id)->firstOrFail()->delete();
+        Cache::forget('front.models');
         return redirect()->route('list_model.machine')->with('success','machine  Supprimer');
     }
 
 
     public function edit($id)
     {
-        $model = Model_machine::where('id',$id)->first();
+        $model = ModelMachine::where('id',$id)->first();
         if(is_null($model)){
                     return abort(404);  }
         $titleSeo=$model->titre;
@@ -72,9 +75,10 @@ class ModelMachineController extends Controller
     { $request->validate([
         'titre' => 'required',
     ]);
-        $model = Model_machine::find($id);
+        $model = ModelMachine::find($id);
             $model->titre = $request->titre;
         $model->save();
+        Cache::forget('front.models');
         return redirect()->route('list_model.machine')->with('success','Merci!');
         
     }
