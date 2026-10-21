@@ -48,7 +48,7 @@
                         </div>
                             <div class="col-12">
                                 <h4>
-                                    <i class="fas fa-globe"></i> Coffe-Shop
+                                    <i class="fas fa-globe"></i> SelectCars
                                     <small class="float-right">Date: {{ $commande->created_at->format('d/m/Y') }}</small>
                                 </h4>
                             </div>
@@ -82,7 +82,7 @@
                             <div class="col-sm-4 invoice-col">
                                 <b>Ref_commande : #{{ $commande->ref_commande }}</b><br>
                                 <br>
-                                <b>Livreur :</b>{{$commande->nom}} <br>
+                                <b>Livreur :</b>{{ $livreur?->nom ?? '—' }} {{ $livreur?->prenom ?? '' }} <br>
                                 <b>Commande ID:</b> {{ $commande->id }}<br>
                                 <b>Payment Due:</b> {{ $commande->created_at->addDays(30)->format('d/m/Y') }}<br>
                             </div>
@@ -106,9 +106,7 @@
                                         @foreach($details as $detail)
                                             <tr>
                                                 <td>{{ $detail->qte }}</td>
-                                                <td>
-                                                
-                                                {{ App\Models\Produit::where('id',$detail->id_produit)->first()->titre }}</td>
+                                                <td>{{ $detail->produit?->titre ?? 'Produit supprimé (#' . $detail->id_produit . ')' }}</td>
                                                 <td>{{ $detail->prix }} dt</td>
                                                 <td>{{ $detail->qte * $detail->prix }} DT</td>
                                             </tr>

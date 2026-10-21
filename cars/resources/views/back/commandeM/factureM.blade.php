@@ -143,10 +143,7 @@
 
                       
 
-                        @php
-              $admin = App\Models\Admin::where('id',session('user'))->first();
-              @endphp
-            @if(Auth::guard('admin')->check() &&  $admin->role=='admin')
+            @can('role', 'admin')
             
             
             <div class="row no-print">
@@ -156,7 +153,7 @@
                             </div>
                      
                         </div>
-            @endif
+            @endcan
                        
                     </div>
                 </div>

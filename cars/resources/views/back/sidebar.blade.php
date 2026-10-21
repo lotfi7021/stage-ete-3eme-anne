@@ -1,5 +1,5 @@
 @php
-    $admin = App\Models\Admin::where('id', session('user'))->first();
+    $admin = Auth::guard('admin')->user();
     $role  = $admin->role ?? '';
 @endphp
 
@@ -36,7 +36,7 @@
                 {{-- ═══════════════════════════════════════
                      ADMIN
                 ═══════════════════════════════════════ --}}
-                @if($role === 'admin')
+                @can('role', 'admin')
 
                     {{-- Tableau de bord --}}
                     <li class="nav-item">
@@ -110,7 +110,7 @@
                            class="nav-link {{ request()->is('admin/list_commandeM*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-file-invoice"></i>
                             <p>Commandes
-                                @php $nbCmd = \App\Models\Commande_M::count(); @endphp
+                                @php $nbCmd = \App\Models\CommandeM::count(); @endphp
                                 @if($nbCmd > 0)
                                     <span class="badge badge-warning right">{{ $nbCmd }}</span>
                                 @endif
@@ -206,7 +206,7 @@
                 {{-- ═══════════════════════════════════════
                      CLIENT
                 ═══════════════════════════════════════ --}}
-                @elseif($role === 'client')
+                @elsecan('role', 'client')
 
                     <li class="nav-header">CATALOGUE</li>
 
@@ -218,16 +218,14 @@
                         </a>
                     </li>
 
-                    @if($admin->groupe != 0)
-                        <li class="nav-header">COMMANDES</li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.list_commandeM') }}"
-                               class="nav-link {{ request()->is('admin/list_commandeM*') ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-file-invoice"></i>
-                                <p>Mes commandes</p>
-                            </a>
-                        </li>
-                    @endif
+                    <li class="nav-header">COMMANDES</li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.list_commandeM') }}"
+                           class="nav-link {{ request()->is('admin/list_commandeM*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-file-invoice"></i>
+                            <p>Mes commandes</p>
+                        </a>
+                    </li>
 
                     <li class="nav-header">SUPPORT</li>
                     <li class="nav-item">
@@ -241,7 +239,7 @@
                 {{-- ═══════════════════════════════════════
                      LIVREUR
                 ═══════════════════════════════════════ --}}
-                @elseif($role === 'livreur')
+                @else
 
                     <li class="nav-header">TABLEAU DE BORD</li>
 
@@ -253,7 +251,7 @@
                         </a>
                     </li>
 
-                @endif
+                @endcan
 
             </ul>
         </nav>

@@ -59,14 +59,6 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-md col-sm-6" id="showmodel" style="display:none;">
-                                                    <div class="form-group border-end">
-                                                        <label for="model" class="font-sm">Model</label>
-                                                        <select class="nice-select" id="model" name="model">
-                                                          
-                                                        </select>
-                                                    </div>
-                                                </div>
                                                
                                                 <div class="col-md col-sm-6">
                                                     <div class="form-group">
@@ -132,17 +124,13 @@
             <div class="col-lg-7" data-aos="slide-right" data-aos-duration="1000">
                 <div class="image mb-40">
                     <!-- Update the data-src attribute to point to choose-1.jpg -->
-                    <img class="lazyload blur-up" src="{{ asset('assets/front/images/placeholder.png') }}" data-src="{{ asset('assets/front/images/background.jpg') }}" alt="Pourquoi choisir Lavazza Coffee?">
+                    <img class="lazyload blur-up" src="{{ asset('assets/front/images/placeholder.png') }}" data-src="{{ asset('assets/front/images/background.jpg') }}" alt="Pourquoi choisir nos pièces de rechange ?">
                 </div>
             </div>
             <div class="col-lg-5" data-aos="fade-up">
                 <div class="content-title mb-40">
-                    <h2 class="title mb-20">Livraison Rapide et Fiable de Café
-
-</h2>
-                    <p>Notre service de livraison est à l'image de votre journée : rapide, efficace et fiable. Que vous ayez besoin d'une recharge matinale ou d'un supplément d'énergie l'après-midi, notre équipe de livraison dédiée veille à ce que votre café préféré vous soit livré avec la plus grande célérité, tout en préservant l'arôme et la chaleur de chaque tasse. Chez Coffe Shop, nous comprenons que le temps est précieux, c'est pourquoi nous avons affiné notre service pour garantir une livraison qui n'est pas seulement rapide, mais toujours à l'heure, à chaque fois. Faites l'expérience de la commodité à son meilleur, avec notre promesse d'excellence en matière de livraison.
-
-.</p>
+                    <h2 class="title mb-20">Livraison Rapide et Fiable de Pièces de Rechange</h2>
+                    <p>Notre service de livraison est à l'image de vos besoins : rapide, efficace et fiable. Que vous recherchiez une pièce pour un entretien de routine ou un composant indispensable à la réparation de votre véhicule, notre équipe dédiée veille à ce que votre pièce de rechange vous soit livrée avec la plus grande célérité, en garantissant l'authenticité et la qualité de chaque référence. Nous comprenons que l'immobilisation d'un véhicule coûte du temps et de l'argent, c'est pourquoi nous avons affiné notre service pour garantir une livraison qui n'est pas seulement rapide, mais toujours à l'heure, à chaque fois. Faites l'expérience de la commodité à son meilleur, avec notre promesse d'excellence en matière de livraison de pièces de rechange.</p>
                 </div>
             </div>
         </div>
@@ -160,47 +148,4 @@
 @stop
 
 @Push('js')
-<script type="text/javascript">
-    $(document).ready(function ()
-    {
-        
-        $('select[name="marque"]').on('change',function(){
-           
-            var marqueID = $(this).val();
-            if(marqueID){
-                $.ajax({
-                    url: '/getModels/'+marqueID,
-                    type: "GET",
-                    dataType:"json",
-                    success:function(data)
-                {
-                    if(data.length != 0){
-                      $('#showmodel').show();
-                    $('select[name="model"]').empty();
-                    
-                    $.each(data, function(key,value){
-
-                        $('select[name="model"]').append('<option value="'+value+'">'+value+'</option>');
-                    });
-                    $(".nice-select").niceSelect('destroy');
-                    $(".nice-select").niceSelect();  
-                    }
-                    else{
-                        $('#showmodel').hide();
-                    }
-                    
-                    
-                }
-
-                });
-            }
-            else {
-                $('select[name="model"]').empty();
-               
-            }
-        });
-
-    });
-    
-</script>
 @endpush

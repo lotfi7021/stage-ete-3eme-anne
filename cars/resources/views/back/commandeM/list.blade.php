@@ -39,14 +39,10 @@
                 <div class="card-tools">
                 </div>
               </div>
-              @php
-              $admin = App\Models\Admin::where('id',session('user'))->first();
-              @endphp
-
               
-            @if(Auth::guard('admin')->check() &&  $admin->role=='client')
+            @can('role', 'client')
               <a href="{{route('admin.list_commandeM.add')}}" class="btn btn-sm btn-default">Commander</a>
-           @endif
+           @endcan
               <!-- /.card-header -->
               <div class="card-body">
               @if(session()->get('success'))

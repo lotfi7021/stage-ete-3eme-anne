@@ -119,7 +119,7 @@
                 <div class="col-md-6">
               <div class="text-muted">
                 <p class="text-sm">Marque:
-                  <b class="d-block">{{$marque = \App\Models\MarqueMachine::where('id',$gestion_machine->marque_id)->first()->titre; }}</b>
+                  <b class="d-block">{{ $gestion_machine->marque->titre }}</b>
                 </p>
             
               

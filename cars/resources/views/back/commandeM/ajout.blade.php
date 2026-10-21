@@ -60,7 +60,7 @@
 @endif
 
                 @php
-      $admin = App\Models\Admin::where('id',session('user'))->first();
+      $admin = Auth::guard('admin')->user();
       @endphp
             <form name="add" method="POST" action="{{ route('admin.list_commandeM.store')}}"  enctype="multipart/form-data">
             @method('POST')
@@ -84,13 +84,13 @@
                             @foreach($machine as $list_machine)
                             
                             @php
-                            $stock = App\Models\stock_machine::where('id_produit',$list_machine->id)->first();
+                            $stock = $list_machine->stock;
                             @endphp
                             <div class="form-group row">
                              <div class="col-md-4"> <label for="{{$list_machine->id}}">{{$list_machine->titre}}</label></div>
                              <div class="col-md-3">
                               @php 
-                              $prix = App\Models\Gestion_machine::where('id',$list_machine->id)->first()->prix;
+                              $prix = $list_machine->prix;
                               @endphp
                               {{ number_format($prix,2)}} Dt
                              </div>

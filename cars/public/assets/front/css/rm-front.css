@@ -55,6 +55,16 @@ h1, h2, h3, h4, h5, h6,
 
 .header-area .main-navbar .navbar-brand img { border-radius: var(--rm-radius); }
 
+/* Logo Select Cars : version blanche par défaut (header sur zone sombre),
+   version couleur quand le header devient clair (mode collant). */
+.header-area .rm-logo-light,
+.header-area .rm-logo-dark { height: 56px; width: auto; }
+.header-area .main-responsive-nav .logo .rm-logo-light,
+.header-area .main-responsive-nav .logo .rm-logo-dark { height: 44px; }
+.header-area .rm-logo-dark { display: none; }
+.header-area.is-sticky .rm-logo-light { display: none; }
+.header-area.is-sticky .rm-logo-dark { display: inline-block; }
+
 .header-area.is-sticky {
   background: var(--rm-surface);
   box-shadow: var(--rm-shadow-1);

@@ -11,7 +11,7 @@
                                 <a href="{{ url('/')}}">
                                 </a>
                             </div>
-                            <p>Chez coffe-shop, nous comprenons l'importance de trouver le machine et le produit parfait qui répond à vos besoins et à votre budget.</p>
+                            <p>Chez SelectCars, nous comprenons l'importance de trouver la machine et le produit parfaits qui répondent à vos besoins et à votre budget.</p>
                             
                         </div>
                     </div>

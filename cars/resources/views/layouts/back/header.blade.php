@@ -18,11 +18,12 @@
     <ul class="navbar-nav ml-auto">
 
       @php
-        $admin = App\Models\Admin::where('id', session('user'))->first();
+        $admin = Auth::guard('admin')->user();
+        $nbTickets = Cache::remember('back.tickets.count', 300, fn () => \App\Models\Support::count());
       @endphp
 
       {{-- ===================== ADMIN NAV ===================== --}}
-      @if($admin->role == "admin")
+      @can('role', 'admin')
 
         {{-- Lien vers le site --}}
         <li class="nav-item">
@@ -48,10 +49,10 @@
         <li class="nav-item dropdown">
           <a class="nav-link" data-toggle="dropdown" href="#">
             <i class="far fa-bell"></i>
-            <span class="badge badge-warning navbar-badge">{{ \App\Models\Support::count() }}</span>
+            <span class="badge badge-warning navbar-badge">{{ $nbTickets }}</span>
           </a>
           <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-            <span class="dropdown-item dropdown-header">{{ \App\Models\Support::count() }} Ticket(s)</span>
+            <span class="dropdown-item dropdown-header">{{ $nbTickets }} Ticket(s)</span>
             <div class="dropdown-divider"></div>
             <a href="{{ route('admin.list_support') }}" class="dropdown-item dropdown-footer">Voir les tickets</a>
           </div>
@@ -59,9 +60,12 @@
 
         {{-- Vider le cache --}}
         <li class="nav-item">
-          <a href="{{ route('cache.clear') }}" class="btn btn-warning btn-sm mt-1 mr-2">
-            <i class="fas fa-broom"></i> Vider le cache
-          </a>
+          <form action="{{ route('cache.clear') }}" method="post" class="d-inline">
+            @csrf
+            <button type="submit" class="btn btn-warning btn-sm mt-1 mr-2">
+              <i class="fas fa-broom"></i> Vider le cache
+            </button>
+          </form>
         </li>
 
         {{-- Plein écran --}}
@@ -72,7 +76,7 @@
         </li>
 
       {{-- ===================== CLIENT NAV ===================== --}}
-      @elseif($admin->role == "client")
+      @elsecan('role', 'client')
 
         <li class="nav-item">
           <a href="{{ url('/') }}" target="_blank" class="nav-link" title="Vers le site web">
@@ -93,12 +97,15 @@
         </li>
 
       {{-- ===================== LIVREUR NAV ===================== --}}
-      @elseif($admin->role == "livreur")
+      @else
 
         <li class="nav-item">
-          <a href="{{ route('cache.clear') }}" class="btn btn-warning btn-sm mt-1 mr-2">
-            <i class="fas fa-broom"></i> Vider le cache
-          </a>
+          <form action="{{ route('cache.clear') }}" method="post" class="d-inline">
+            @csrf
+            <button type="submit" class="btn btn-warning btn-sm mt-1 mr-2">
+              <i class="fas fa-broom"></i> Vider le cache
+            </button>
+          </form>
         </li>
 
         <li class="nav-item">
@@ -107,7 +114,7 @@
           </a>
         </li>
 
-      @endif
+      @endcan
 
       {{-- Bascule de thème clair / sombre (visible pour les 3 rôles) --}}
       <li class="nav-item">

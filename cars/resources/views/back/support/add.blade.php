@@ -49,7 +49,7 @@
                     </div>
                 @endif
                 @php
-    $admin = App\Models\Admin::where('id', session('user'))->first();
+    $admin = Auth::guard('admin')->user();
     @endphp
             <form name="add" method="POST" action="{{ route('admin.list_support.store')}}"  enctype="multipart/form-data">
             @method('POST')

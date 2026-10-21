@@ -13,7 +13,8 @@
                 <!-- Mobile Logo -->
                 <div class="logo">
                     <a href="{{ url('/')}}">
-                        <img src="{{asset('assets/front/images/logo/logo.png')}}" alt="logo">
+                        <img class="rm-logo-light" src="{{asset('assets/front/images/logo/select-cars_logo-white.png')}}" alt="Select Cars">
+                        <img class="rm-logo-dark" src="{{asset('assets/front/images/logo/select-cars_logo-officiel.png')}}" alt="Select Cars">
                     </a>
                 </div>
                 <!-- Menu toggle button -->
@@ -30,7 +31,8 @@
                 <nav class="navbar navbar-expand-lg">
                     <!-- Logo -->
                     <a class="navbar-brand" href="{{ url('/')}}">
-                        <img src="{{asset('assets/front/images/logo/logo-header.png')}}"  width="70" height="70" alt="Logo">
+                        <img class="rm-logo-light" src="{{asset('assets/front/images/logo/select-cars_logo-white.png')}}" alt="Select Cars">
+                        <img class="rm-logo-dark" src="{{asset('assets/front/images/logo/select-cars_logo-officiel.png')}}" alt="Select Cars">
                     </a>
                     <!-- Navigation items -->
                     <div class="collapse navbar-collapse">

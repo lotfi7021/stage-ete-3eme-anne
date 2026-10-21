@@ -15,6 +15,21 @@
                 {{ method_field('post') }}
                 {{ csrf_field() }}
 
+                <div class="form-group">
+                    <label for="id_livreur">Livreur</label>
+                    <select name="id_livreur" id="id_livreur" class="form-control" required>
+                        <option value="">-- Choisir un livreur --</option>
+                        @foreach($livreurs as $livreur)
+                            <option value="{{ $livreur->id }}" @selected(old('id_livreur', $commande->id_livreur) == $livreur->id)>
+                                {{ $livreur->nom }} {{ $livreur->prenom }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('id_livreur')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <button type="submit" class="confirm-btn" id="confirmButton">
                     ✅ Confirmer
                 </button>

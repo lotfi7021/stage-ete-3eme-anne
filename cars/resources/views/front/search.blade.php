@@ -46,14 +46,12 @@
                             <div class="product-default border p-10 mb-25">
                                 <figure class="product-img mb-15">
                                 
-                                    <a href="{{ url('produit',$listProduit->reference,$listProduit->slug)}}" target="_self" title="Link" class="lazy-container ratio ratio-2-3">
+                                    <a href="{{ route('machine') }}" target="_self" title="Voir le catalogue" class="lazy-container ratio ratio-2-3">
                                     <img class="lazyload" src="{{asset('assets/front/images/placeholder.png')}}" data-src="{{url('/images/produits',$listProduit->image1)}}" alt="{{ $listProduit->titre }}">
                                     </a>
                                 </figure>
                                 <div class="product-details">
-                                    <span class="product-category font-xsm">@php
-                                        $marque = \App\Models\MarqueMachine::where('id',$listProduit->marque_id)->first(); echo $marque->titre;
-                                    @endphp</span>
+                                    <span class="product-category font-xsm">{{ $listProduit->marque?->titre ?? '—' }}</span>
                                     <div class="d-flex align-items-center justify-content-between mb-15">
                                         <h5 class="product-title lc-1 mb-0">{{ $listProduit->titre }}</h5>
                                        
